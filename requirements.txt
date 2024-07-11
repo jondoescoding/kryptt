@@ -1,0 +1,10 @@
+nose
+sphinx
+langchain
+langchain-community
+langchain_openai
+python-dotenv
+phidata
+eth-ape
+tavily-python
+loguru
