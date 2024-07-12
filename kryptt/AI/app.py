@@ -1,12 +1,13 @@
 # Local Imports
 from llm import LLM
+from tools import *
 
 # Langchain
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
 
 
-tools = []
+tools = [python_assistant_tool]
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -26,6 +27,6 @@ agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 print(agent_executor.invoke(
     {
-        "input": ""
+        "input": "use python to show me: what is the current time?"
     })["output"]
     )

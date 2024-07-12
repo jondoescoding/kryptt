@@ -3,6 +3,7 @@ sphinx
 langchain
 langchain-community
 langchain_openai
+langchain_experimental
 python-dotenv
 phidata
 eth-ape
