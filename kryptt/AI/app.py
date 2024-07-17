@@ -7,19 +7,30 @@ from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
 
 tools = [
-            # Coin Gecko Tools
-            coin_gecko_fetch_ohlc_tool,
-            coin_gecko_fetch_token_tool,
-            coin_gecko_fetch_token_data_tool,
+
+            # Coin Gecko
+            coin_gecko_fetch_ohlc_tool, # gets price data from the token 
+            #coin_gecko_fetch_token_tool, # gets the token from the large list
+            coin_gecko_fetch_token_data_tool, # gets the misc data from the token
+            # 1inch
+            oneinch_search_tokens_tool,
+            oneinch_get_many_tokens_tool,
+            # Coin Gecko PT 2
+            coin_gecko_fetch_tokens_price_tool, # gets the price of a token
+            # Web search
+            tavily_tool,
             # Data Analysis
-            python_assistant_tool
+            python_assistant_tool,
+            # Forex
+            convert_coin_price_tool,
+
         ]
 
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You are to act as a helpful cryptocurrency assistant. You have access to python. Python is good for general questions, data analysis and machine learning. In addition you have the capabilities to conduct trade.",
+            "You are a cryptocurrency social monitor and trading assistant. You have access to python. Python is good for general questions, data analysis, machine learning and the capabilities to conduct trade. If you don't know the answer to a question, then apologize and say you don't know the answer to the question.",
         ),
         ("placeholder", "{chat_history}"),
         ("human", "{input}"),
@@ -27,14 +38,14 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-agent = create_tool_calling_agent(LLM.groq8b, tools, prompt)
+agent = create_tool_calling_agent(LLM.groq70b, tools, prompt)
 
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_parsing_errors=True)
 
 print(
     agent_executor.invoke(
         {
-            "input": "Fetch the last 7 days of OHLC price data. Using that information predict the price for the next 3 days using python."
+            "input": "Give me the information for the following token addresses: 0xd586E7F844cEa2F87f50152665BCbc2C279D8d70, 0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8. The information should be in bullet list format and only contain: the decimals, name of tokens, price in usd"
         }
     )['output']
 )
