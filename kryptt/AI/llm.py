@@ -1,8 +1,9 @@
 # LOCAL IMPORT
-from config import OPENAI_TOKEN, OPENROUTER_TOKEN
+from config import OPENAI_TOKEN, OPENROUTER_TOKEN, GROQ_API_KEY
 
 # Langchain
 from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 
 def ChatOpenRouter(model: str, temperature: int) -> ChatOpenAI:
     """
@@ -61,4 +62,24 @@ class LLM():
         api_key=OPENAI_TOKEN,
         verbose=True
     )
+    
+    groq70b = ChatGroq(
+    temperature=0,
+    model="llama3-70b-8192",
+    api_key=GROQ_API_KEY,
+    verbose=True
+    )
 
+    groq8b = ChatGroq(
+    temperature=0,
+    model="llama3-8b-8192",
+    api_key=GROQ_API_KEY,
+    verbose=True
+    )
+    
+    gorilla = ChatOpenAI(
+    openai_api_base="http://zanino.millennium.berkeley.edu:8000/v1",
+    openai_api_key="EMPTY",
+    model="gorilla-7b-hf-v1",
+    verbose=True
+    )
