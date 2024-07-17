@@ -1,6 +1,13 @@
 # Langchain 
 from langchain.pydantic_v1 import BaseModel, Field, validator
 
+# MoneyInput class is used to define the input structure for currency conversion operations.
+# It contains two fields: 'usd_coin_price' for the USD dollar value ($) of the coin and 'currency_to_convert_to' for the target currency.
+class MoneyInput(BaseModel):
+    usd_coin_price: str = Field(description="Should be USD dollar value ($) of the coin")
+    currency_to_convert_to: str = Field(description="This is the currency which the USD price is being converted TO")
+
+
 class AIInput(BaseModel):
     message: str = Field(description="The text prompt for the AI to process.")
 
