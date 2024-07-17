@@ -65,14 +65,21 @@ class LLM():
     
     groq70b = ChatGroq(
     temperature=0,
-    model="llama3-70b-8192",
+    model="llama3-groq-70b-8192-tool-use-preview",
     api_key=GROQ_API_KEY,
     verbose=True
     )
 
     groq8b = ChatGroq(
     temperature=0,
-    model="llama3-8b-8192",
+    model="llama3-8b-8192-tool-use-preview",
+    api_key=GROQ_API_KEY,
+    verbose=True
+    )
+    
+    groqMistral = ChatGroq(
+    temperature=0,
+    model="mixtral-8x7b-32768",
     api_key=GROQ_API_KEY,
     verbose=True
     )
