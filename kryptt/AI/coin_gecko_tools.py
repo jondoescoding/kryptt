@@ -100,3 +100,38 @@ def fetch_coin_data(token_id: str, query: list[str]):
     result = {key: data.get(key) for key in query}
     
     return result
+
+def fetch_tokens_price(token_ids: str | list[str]):
+    """
+    Fetches the current price in USD for one or more tokens from CoinGecko.
+
+    Args:
+        token_ids (str | list[str]): A single token ID or a list of token IDs.
+
+    Returns:
+        dict: A dictionary with token IDs as keys and their USD prices as values.
+    """
+    log.info(f"Fetching price data for token(s): {token_ids}")
+    
+    if isinstance(token_ids, str):
+        token_ids = [token_ids]
+    
+    ids_param = ",".join(token_ids)
+    url = f"https://api.coingecko.com/api/v3/simple/price?ids={ids_param}&vs_currencies=usd"
+    
+    headers = {
+        "accept": "application/json",
+        "x-cg-demo-api-key": COINGECKO_API_KEY
+    }
+    
+    try:
+        data = fetch_data(url, headers)
+        if "error" in data:
+            log.error(f"Error fetching price data: {data['error']}")
+            return {"error": data['error']}
+        
+        log.success(f"Successfully fetched price data for token(s): {token_ids}")
+        return data
+    except Exception as e:
+        log.error(f"An error occurred while fetching price data: {str(e)}")
+        return {"error": str(e)}
