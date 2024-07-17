@@ -53,8 +53,6 @@ def fetch_token(token_name_symbol_id: str):
         log.error(f"An error occurred while fetching data for coin: {token_name_symbol_id} - {str(e)}")
         return f"An error occurred: {str(e)}"
 
-
-
 def fetch_ohlc_by_id(token_id: str, days: int | None):
     """
     Fetches the OHLC (Open, High, Low, Close) data for a specific cryptocurrency coin based on the coin name and number of days provided.
@@ -84,3 +82,21 @@ def fetch_ohlc_by_id(token_id: str, days: int | None):
     except Exception as e:
         log.error(f"An error occurred while fetching OHLC data for coin: {token_id} - {str(e)}")
         return {"error": str(e)}
+
+def fetch_coin_data(token_id: str, query: list[str]):
+    url = f"https://api.coingecko.com/api/v3/coins/{token_id}"
+    
+    headers = {
+        "accept": "application/json",
+        "x-cg-demo-api-key": COINGECKO_API_KEY
+    }
+    
+    data = fetch_data(url, headers)
+    
+    if "error" in data:
+        raise Exception(f"Error fetching data: {data['error']}")
+    
+    # Extract relevant data based on query
+    result = {key: data.get(key) for key in query}
+    
+    return result

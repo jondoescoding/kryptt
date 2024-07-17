@@ -1,34 +1,10 @@
 # Local 
 from config import OPENAI_TOKEN, OPENROUTER_TOKEN, GROQ_API_KEY
-from validation import coinGeckoFetchTokenInput, coinGeckoFetchOHLCInput, AIInput
-from e2b2_tool import CodeInterpreterFunctionTool
-from coin_gecko_tools import fetch_token, fetch_ohlc_by_id
-from phi.assistant.python import PythonAssistant
-from phi.llm.groq import Groq
+from validation import coinGeckoFetchTokenInput, coinGeckoFetchOHLCInput, coinGeckoFetchTokenDataInput
+from coin_gecko_tools import fetch_token, fetch_ohlc_by_id, fetch_coin_data
 
 # Langchain
 from langchain.tools import StructuredTool
-
-# Python Shell From E2B
-e2b_code_interpreter_tool = CodeInterpreterFunctionTool().to_langchain_tool()
-
-
-
-# Phi Data
-python_assistant = PythonAssistant(
-    llm=Groq(model="llama3-8b-8192", api_key=GROQ_API_KEY),
-    pip_install=True,
-    run_code=True,
-    read_files=True,
-    list_files=True,
-    debug_mode=True
-)
-python_assistant_tool = StructuredTool.from_function(
-    func=python_assistant.print_response,
-    name="python_assistant_tool",
-    description="A Python shell. Use this to execute python commands. Input should be a valid python command.",
-    args_schema=AIInput
-)
 
 # Coingecko tools
 coin_gecko_fetch_token_tool = StructuredTool.from_function(
@@ -43,4 +19,11 @@ coin_gecko_fetch_ohlc_tool = StructuredTool(
     description="This is a tool which is used to fetch the price data for a specific cryptocurrency",
     name="coin_gecko_fetch_ohlc_tool",
     args_schema=coinGeckoFetchOHLCInput
+)
+
+coin_gecko_fetch_token_data_tool = StructuredTool(
+    func=fetch_coin_data,
+    description="This tool fetches specific data for a cryptocurrency based on the provided query keys.",
+    name="coin_gecko_fetch_token_data_tool",
+    args_schema=coinGeckoFetchTokenDataInput
 )
