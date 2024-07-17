@@ -1,6 +1,6 @@
 import os
 import json
-
+from config import E2B_API_KEY
 from typing import Any, List
 from langchain_core.tools import Tool
 from pydantic.v1 import BaseModel, Field
@@ -26,11 +26,7 @@ class CodeInterpreterFunctionTool:
     def __init__(self):
         # Instantiate the E2B sandbox - this is a long lived object
         # that's pinging E2B cloud to keep the sandbox alive.
-        if "E2B_API_KEY" not in os.environ:
-            raise Exception(
-                "Code Interpreter tool called while E2B_API_KEY environment variable is not set. Please get your E2B api key here https://e2b.dev/docs and set the E2B_API_KEY environment variable."
-            )
-        self.code_interpreter = CodeInterpreter()
+        self.code_interpreter = CodeInterpreter(api_key=E2B_API_KEY)
 
     def close(self):
         self.code_interpreter.close()
