@@ -10,7 +10,9 @@ tools = [
             # Coin Gecko Tools
             coin_gecko_fetch_ohlc_tool,
             coin_gecko_fetch_token_tool,
-            coin_gecko_fetch_token_data_tool
+            coin_gecko_fetch_token_data_tool,
+            # Data Analysis
+            python_assistant_tool
         ]
 
 prompt = ChatPromptTemplate.from_messages(
@@ -25,14 +27,14 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-agent = create_tool_calling_agent(LLM.groqMistral, tools, prompt)
+agent = create_tool_calling_agent(LLM.groq8b, tools, prompt)
 
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_parsing_errors=True)
 
 print(
     agent_executor.invoke(
         {
-            "input": "Give me Bitcoin's whitepaper link"
+            "input": "Fetch the last 7 days of OHLC price data. Using that information predict the price for the next 3 days using python."
         }
     )['output']
 )
