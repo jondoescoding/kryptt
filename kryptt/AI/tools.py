@@ -1,43 +1,46 @@
-# Local Imports
-from config import OPENAI_TOKEN, OPENROUTER_TOKEN
-from validation import AIInput
+# Local 
+from config import OPENAI_TOKEN, OPENROUTER_TOKEN, GROQ_API_KEY
+from validation import coinGeckoFetchTokenInput, coinGeckoFetchOHLCInput, AIInput
+from e2b2_tool import CodeInterpreterFunctionTool
+from coin_gecko_tools import fetch_token, fetch_ohlc_by_id
+from phi.assistant.python import PythonAssistant
+from phi.llm.groq import Groq
 
 # Langchain
 from langchain.tools import StructuredTool
 
-# Phidata
-from phi.assistant.python import PythonAssistant
-from phi.llm.openai import OpenAIChat
-
-from langchain.agents import Tool
-from langchain_experimental.utilities import PythonREPL
-
-# TODO Implement a E2B Python Tool instead of repl or phi data
+# Python Shell From E2B
+e2b_code_interpreter_tool = CodeInterpreterFunctionTool().to_langchain_tool()
 
 
-python_repl = PythonREPL()
-# You can create the tool to pass to an agent
-repl_tool = Tool(
-    name="python_repl",
-    description="A Python shell. Use this to execute python commands. Input should be a valid python command. If you want to see the output of a value, you should print it out with `print(...)`.",
-    func=python_repl.run,
-)
 
-
-# Python Tool
+# Phi Data
 python_assistant = PythonAssistant(
-    llm=OpenAIChat(model="gpt-3.5-turbo", api_key=OPENAI_TOKEN),
+    llm=Groq(model="llama3-8b-8192", api_key=GROQ_API_KEY),
     pip_install=True,
-    show_function_calls=True,
     run_code=True,
-    save_and_run=True,
-    run_files=True,
-    instructions=["Always use logger to showcase print statements"]
+    read_files=True,
+    list_files=True,
+    debug_mode=True
 )
-
 python_assistant_tool = StructuredTool.from_function(
     func=python_assistant.print_response,
-    description="A Python shell. Used for data analysis, predictions and machine learning. Use this to execute python commands. Input should be a valid python command. Input should be a valid python command. If you want to see the output of a value, you should print it out with `print(...)`",
-    name="python_assistant",
+    name="python_assistant_tool",
+    description="A Python shell. Use this to execute python commands. Input should be a valid python command.",
     args_schema=AIInput
+)
+
+# Coingecko tools
+coin_gecko_fetch_token_tool = StructuredTool.from_function(
+    func=fetch_token,
+    description="Useful for finding token. Pulls data from coin gecko. This is a tool which is for retrieval of a token's ID from the coin gecko platform. It should be used before any other coin gecko tool in order to get the token's ID for other tools.",
+    name="coin_gecko_fetch_token_tool",
+    args_schema=coinGeckoFetchTokenInput
+)
+
+coin_gecko_fetch_ohlc_tool = StructuredTool(
+    func=fetch_ohlc_by_id,
+    description="This is a tool which is used to fetch the price data for a specific cryptocurrency",
+    name="coin_gecko_fetch_ohlc_tool",
+    args_schema=coinGeckoFetchOHLCInput
 )
