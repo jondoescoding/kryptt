@@ -23,7 +23,16 @@ tools = [
             python_assistant_tool,
             # Forex
             convert_coin_price_tool,
-
+            # Alpaca
+            get_accounts_details_tool, get_all_order_tool,
+            get_order_by_id_tool,
+            cancel_all_order_tool,
+            cancel_order_by_id_tool,
+            get_open_orders_tool,
+            post_order_tool,
+            get_positions_tool,
+            close_all_positions_tool,
+            close_a_position_tool
         ]
 
 prompt = ChatPromptTemplate.from_messages(
