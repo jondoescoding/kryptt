@@ -32,7 +32,11 @@ tools = [
             post_order_tool,
             get_positions_tool,
             close_all_positions_tool,
-            close_a_position_tool
+            close_a_position_tool,
+            # AAVE + AAVE
+            flash_loan_arbitrage_tool,
+            # Traderjoe
+            
         ]
 
 prompt = ChatPromptTemplate.from_messages(
@@ -54,7 +58,7 @@ agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_pa
 print(
     agent_executor.invoke(
         {
-            "input": "Give me the information for the following token addresses: 0xd586E7F844cEa2F87f50152665BCbc2C279D8d70, 0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8. The information should be in bullet list format and only contain: the decimals, name of tokens, price in usd"
+            "input": "Execute a flash loan arbitrage between the two tokens: DAI.e: 0xd586e7f844cea2f87f50152665bcbc2c279d8d70 & USDC.e 0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664 on Trader Joe using Aave flash loans"
         }
     )['output']
 )
