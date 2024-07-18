@@ -1,3 +1,6 @@
+# Python
+from typing import Optional
+
 # Langchain 
 from langchain.pydantic_v1 import BaseModel, Field, validator
 
@@ -87,3 +90,23 @@ class oneinchGetManyTokensInput(BaseModel):
     contract_addresses: str = Field(
         description="A comma separated list of token contract addresses on the Avalanche network (chain_id: 43114) to fetch information for. They start with 0x."
     )
+    
+class CloseAllPositionsInput(BaseModel):
+    cancel_orders: bool = Field(default=False, description="If true, cancel all open orders before liquidating all positions")
+
+class ClosePositionInput(BaseModel):
+    symbol_or_asset_id: str = Field(description="The symbol name or asset ID of the position to close")
+    close_options: Optional[dict] = Field(default=None, description="The various close position request parameters")
+
+
+class PostOrderInput(BaseModel):
+    symbol: str = Field(description="The symbol of the asset to trade")
+    qty: int = Field(description="The quantity of the asset to buy or sell")
+    order_side: str = Field(description="The side of the trade (BUY or SELL)")
+    time_in_force: str = Field(description="The duration for which the order is valid")
+
+class GetOrderByIdInput(BaseModel):
+    order_id: str = Field(description="The ID of the order to fetch")
+
+class CancelOrderByIdInput(BaseModel):
+    order_id: str = Field(description="The ID of the order to cancel")

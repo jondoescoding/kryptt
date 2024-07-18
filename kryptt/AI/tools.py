@@ -1,9 +1,10 @@
 # Local
 from config import GROQ_API_KEY, TAVILY_API_KEY
-from validation import CoinGeckoFetchTokenInput, CoinGeckoFetchOHLCInput, CoinGeckoFetchTokenDataInput, MoneyInput, AIInput, CoinGeckoFetchTokensPriceInput, oneinchSearchTokensInput, oneinchGetManyTokensInput
+from validation import CoinGeckoFetchTokenInput, CoinGeckoFetchOHLCInput, CoinGeckoFetchTokenDataInput, MoneyInput, AIInput, CoinGeckoFetchTokensPriceInput, oneinchSearchTokensInput, oneinchGetManyTokensInput, GetOrderByIdInput, CancelOrderByIdInput, PostOrderInput, CloseAllPositionsInput, ClosePositionInput
 from coin_gecko_tools import fetch_token, fetch_ohlc_by_id, fetch_coin_data, fetch_tokens_price
 from forex_tools import convert_coin_price
 from one_inch_tools import one_inch_search_tokens, oneinch_get_many_tokens
+from alpaca_tools import get_accounts_details_alpaca, get_all_order_alpaca, get_order_by_id_alpaca, cancel_all_order_alpaca, cancel_order_by_id_alpaca, get_open_orders_alpaca, post_order_alpaca, get_positions_alpaca, close_all_positions, close_a_position
 
 # Langchain
 from langchain.tools import StructuredTool
@@ -83,4 +84,70 @@ coin_gecko_fetch_tokens_price_tool = StructuredTool(
     description="This tool fetches the current price in USD for one or more cryptocurrency tokens from the CoinGecko platform. It can accept either a single token ID or a list of token IDs.",
     name="coin_gecko_fetch_tokens_price_tool",
     args_schema=CoinGeckoFetchTokensPriceInput
+)
+
+# Alpaca Tools
+get_accounts_details_tool = StructuredTool.from_function(
+    func=get_accounts_details_alpaca,
+    name="Get_Accounts_Details_Alpaca",
+    description="Fetches account details from Alpaca."
+)
+
+get_all_order_tool = StructuredTool.from_function(
+    func=get_all_order_alpaca,
+    name="Get_All_Order_Alpaca",
+    description="Fetches all orders from Alpaca."
+)
+
+get_order_by_id_tool = StructuredTool.from_function(
+    func=get_order_by_id_alpaca,
+    name="Get_Order_By_ID_Alpaca",
+    description="Fetches an order by ID from Alpaca.",
+    args_schema=GetOrderByIdInput
+)
+
+cancel_all_order_tool = StructuredTool.from_function(
+    func=cancel_all_order_alpaca,
+    name="Cancel_All_Order_Alpaca",
+    description="Cancels all orders on Alpaca."
+)
+
+cancel_order_by_id_tool = StructuredTool.from_function(
+    func=cancel_order_by_id_alpaca,
+    name="Cancel_Order_By_ID_Alpaca",
+    description="Cancels an order by ID on Alpaca.",
+    args_schema=CancelOrderByIdInput
+)
+
+get_open_orders_tool = StructuredTool.from_function(
+    func=get_open_orders_alpaca,
+    name="Get_Open_Orders_Alpaca",
+    description="Fetches open orders from Alpaca."
+)
+
+post_order_tool = StructuredTool.from_function(
+    func=post_order_alpaca,
+    name="Post_Order_Alpaca",
+    description="Posts an order to Alpaca.",
+    args_schema=PostOrderInput
+)
+
+get_positions_tool = StructuredTool.from_function(
+    func=get_positions_alpaca,
+    name="Get_Positions_Alpaca",
+    description="Fetches positions from Alpaca."
+)
+
+close_all_positions_tool = StructuredTool.from_function(
+    func=close_all_positions,
+    name="Close_All_Positions_Alpaca",
+    description="Closes all positions on Alpaca.",
+    args_schema=CloseAllPositionsInput
+)
+
+close_a_position_tool = StructuredTool.from_function(
+    func=close_a_position,
+    name="Close_A_Position_Alpaca",
+    description="Closes a specific position on Alpaca.",
+    args_schema=ClosePositionInput
 )
