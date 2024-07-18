@@ -1,0 +1,19 @@
+name: Ape Testing
+
+plugins:
+  - name: foundry
+  - name: avalanche
+  - name: alchemy
+
+
+foundry:
+  host: auto
+  fork:
+    avalanche:
+      mainnet:
+        upstream_provider: geth
+
+geth:
+  avalanche:
+    mainnet:
+      uri: https://avalanche-mainnet.core.chainstack.com/ext/bc/C/rpc/f33804dd98cad6bc454e78ea22d84e82
