@@ -9,7 +9,7 @@ import requests
 
 def convert_coin_price(usd_coin_price: str, currency_to_convert_to: str):
     """
-    Converts the given USD coin price to the specified currency using a conversion API.
+    Converts the given USD coin/token price to the specified currency using a conversion API.
     """
     log.info(f"Starting conversion: {usd_coin_price} USD to {currency_to_convert_to}")
 
