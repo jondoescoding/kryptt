@@ -15,7 +15,7 @@ tools = [
             # 1inch
             oneinch_search_tokens_tool,
             oneinch_get_many_tokens_tool,
-            # Coin Gecko PT 2
+            # Coin Gecko PT 2 -> Placed here since Groq runs tools in sequence
             coin_gecko_fetch_tokens_price_tool, # gets the price of a token
             # Web search
             tavily_tool,
@@ -46,6 +46,7 @@ prompt = ChatPromptTemplate.from_messages(
         ("placeholder", "{agent_scratchpad}"),
     ]
 )
+
 
 agent = create_tool_calling_agent(LLM.groq70b, tools, prompt)
 
