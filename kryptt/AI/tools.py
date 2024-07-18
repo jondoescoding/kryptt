@@ -1,6 +1,7 @@
 # Local
 from config import GROQ_API_KEY, TAVILY_API_KEY
-from validation import CoinGeckoFetchTokenInput, CoinGeckoFetchOHLCInput, CoinGeckoFetchTokenDataInput, MoneyInput, AIInput, CoinGeckoFetchTokensPriceInput, oneinchSearchTokensInput, oneinchGetManyTokensInput, GetOrderByIdInput, CancelOrderByIdInput, PostOrderInput, CloseAllPositionsInput, ClosePositionInput
+from aave_tools import execute_flash_loan_arbitrage
+from validation import CoinGeckoFetchTokenInput, CoinGeckoFetchOHLCInput, CoinGeckoFetchTokenDataInput, MoneyInput, AIInput, CoinGeckoFetchTokensPriceInput, oneinchSearchTokensInput, oneinchGetManyTokensInput, GetOrderByIdInput, CancelOrderByIdInput, PostOrderInput, CloseAllPositionsInput, ClosePositionInput, FlashLoanArbitrageInput
 from coin_gecko_tools import fetch_token, fetch_ohlc_by_id, fetch_coin_data, fetch_tokens_price
 from forex_tools import convert_coin_price
 from one_inch_tools import one_inch_search_tokens, oneinch_get_many_tokens
@@ -17,6 +18,14 @@ from phi.llm.groq import Groq
 
 # Web search
 tavily_tool = TavilySearchResults(max_results=10, tavily_api_key=TAVILY_API_KEY)
+
+# AAVE Tools
+flash_loan_arbitrage_tool = StructuredTool.from_function(
+    func=execute_flash_loan_arbitrage,
+    name="flash_loan_arbitrage_tool",
+    description="Execute a flash loan arbitrage between two tokens on Trader Joe using Aave flash loans",
+    args_schema=FlashLoanArbitrageInput
+)
 
 # 1inch Tools
 oneinch_search_tokens_tool = StructuredTool.from_function(
