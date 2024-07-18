@@ -24,7 +24,7 @@ def impersonate_account():
 
 def load_router_contract():
     try:
-        router_contract = Contract.from_explorer("0x60aE616a2155Ee3d9A68541Ba4544862310933d4")
+        router_contract = Contract(address="0x60aE616a2155Ee3d9A68541Ba4544862310933d4")
         print(f"Loaded router contract at address: {router_contract.address}")
         return router_contract
     except Exception as e:
@@ -32,8 +32,8 @@ def load_router_contract():
 
 def load_token_contracts(token1_address, token2_address):
     try:
-        token1_contract = Contract.from_explorer(token1_address)
-        token2_contract = Contract.from_explorer(token2_address)
+        token1_contract = Contract(token1_address)
+        token2_contract = Contract(token2_address)
         
         token1 = {
             "address": token1_contract.address,
@@ -97,46 +97,46 @@ def execute_swap(account, router_contract, token_in, token_out, amount_in, min_a
         print(f"Error in execute_swap: {str(e)}")
         return False
 
-def find_arbitrage(account, router_contract, token0, token1):
-    with networks.parse_network_choice("avalanche:mainnet-fork") as provider:
-        native_token = Contract(NATIVE_TOKEN_ADDRESS)
-        
-        for _ in tqdm(range(MAX_ITERATIONS), desc="Searching for arbitrage"):
-            try:
-                qty_out = router_contract.getAmountsOut(
-                    10**token0.decimals,
-                    [token0.address, native_token.address, token1.address]
-                )[-1] / 10**token1.decimals
-                
-                if 1.01 <= qty_out < 2.00:
-                    print(f"\nArbitrage opportunity found!")
-                    print(f"{datetime.now().strftime('[%I:%M:%S %p]')} {token0.symbol} -> {token1.symbol}: ({qty_out:.3f})")
-                    
-                    # Execute the swap
-                    amount_in = 10**token0.decimals
-                    min_amount_out = int(qty_out * 0.99 * 10**token1.decimals)  # 1% slippage
-                    deadline = int(datetime.now().timestamp()) + 300  # 5 minutes from now
-                    
-                    print(f"Executing swap with parameters: amount_in={amount_in}, min_amount_out={min_amount_out}, path=[{token0.symbol}, {native_token.symbol}, {token1.symbol}], deadline={deadline}")
-                    swap_result = execute_swap(account, router_contract, token0, token1, amount_in, min_amount_out, deadline)
-                    
-                    if swap_result:
-                        print("Swap executed successfully")
-                    else:
-                        print("Swap failed")
-                    
-                    return True
+def find_arbitrage(account, router_contract, token0: dict, token1: dict):
+    native_token = Contract(NATIVE_TOKEN_ADDRESS)
+    
+    for _ in tqdm(range(MAX_ITERATIONS), desc="Searching for arbitrage"):
+        try:
+            qty_out = router_contract.getAmountsOut(
+                10**token0['decimals'],
+                [token0['address'], native_token.address, token1['address']]
+            )[-1] / 10**token1['decimals']
             
-            except Exception as e:
-                print(f"\nError occurred: {str(e)}")
-                return False
+            if 1.01 <= qty_out < 2.00:
+                print(f"\nArbitrage opportunity found!")
+                print(f"{datetime.now().strftime('[%I:%M:%S %p]')} {token0['symbol']} -> {token1['symbol']}: ({qty_out:.3f})")
+                
+                # Execute the swap
+                amount_in = 10**token0['decimals']
+                min_amount_out = int(qty_out * 0.99 * 10**token1['decimals'])  # 1% slippage
+                deadline = int(datetime.now().timestamp()) + 300  # 5 minutes from now
+                
+                print(f"Executing swap with parameters: amount_in={amount_in}, min_amount_out={min_amount_out}, path=[{token0['symbol']}, {native_token.symbol()}, {token1['symbol']}], deadline={deadline}")
+                swap_result = execute_swap(account, router_contract, token0, token1, amount_in, min_amount_out, deadline)
+                
+                if swap_result:
+                    print("Swap executed successfully")
+                else:
+                    print("Swap failed")
+                
+                return True
         
-        print("\nNo arbitrage opportunities found after MAX_ITERATIONS")
-        return False
+        except Exception as e:
+            print(f"\nError occurred: {str(e)}")
+            return False
+    
+    print("\nNo arbitrage opportunities found after MAX_ITERATIONS")
+    return False
 
 # Example usage
 if __name__ == "__main__":
-    with networks.parse_network_choice("avalanche:mainnet:https://avalanche-mainnet.core.chainstack.com/ext/bc/C/rpc/f33804dd98cad6bc454e78ea22d84e82") as provider:
+    with networks.parse_network_choice("avalanche:mainnet-fork:foundry") as provider:
+    #with networks.avalanche.mainnet_fork.use_provider("foundry"):
         account = impersonate_account()
         router_contract = load_router_contract()
         token0, token1 = load_token_contracts("0xc7198437980c041c805A1EDcbA50c1Ce5db95118", "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70")

@@ -1,9 +1,12 @@
 name: Ape Testing
 
+default_ecosystem: avalanche
+
 plugins:
   - name: foundry
   - name: avalanche
   - name: alchemy
+  - name: etherscan
 
 
 foundry:
