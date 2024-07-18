@@ -9,14 +9,15 @@ NATIVE_TOKEN_ADDRESS = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"  # WAVAX on 
 def setup_avalanche():
     try:
         # Connect to the Avalanche network
-        networks.default = "avalanche:mainnet"
-        print("Connected to Avalanche mainnet")
+        #networks.default = "avalanche"
+        with networks.parse_network_choice("avalanche:mainnet-fork:foundry") as provider:
+            print("Connected to Avalanche mainnet")
     except Exception as e:
         raise Exception(f"Failed to connect to Avalanche network: {str(e)}")
 
 def impersonate_account():
     try:
-        hot_wallet = accounts['0x9Da5812111DCBD65fF9b736874a89751A4F0a2F8']
+        hot_wallet = accounts['0xf89d7b9c864f589bbF53a82105107622B35EaA40']
         print(f"Impersonated account: {hot_wallet.address}")
         return hot_wallet
     except Exception as e:
@@ -97,7 +98,7 @@ def execute_swap(account, router_contract, token_in, token_out, amount_in, min_a
         print(f"Error in execute_swap: {str(e)}")
         return False
 
-def find_arbitrage(account, router_contract, token0: dict, token1: dict):
+def find_arbitrage(flash_loan_contract, router_contract, token0: dict, token1: dict):
     native_token = Contract(NATIVE_TOKEN_ADDRESS)
     
     for _ in tqdm(range(MAX_ITERATIONS), desc="Searching for arbitrage"):
@@ -117,7 +118,20 @@ def find_arbitrage(account, router_contract, token0: dict, token1: dict):
                 deadline = int(datetime.now().timestamp()) + 300  # 5 minutes from now
                 
                 print(f"Executing swap with parameters: amount_in={amount_in}, min_amount_out={min_amount_out}, path=[{token0['symbol']}, {native_token.symbol()}, {token1['symbol']}], deadline={deadline}")
-                swap_result = execute_swap(account, router_contract, token0, token1, amount_in, min_amount_out, deadline)
+                
+                # Call executeArbitrage on the flash loan contract
+                flash_loan_contract.executeArbitrage(
+                    router_contract.address,
+                    token0['address'],
+                    token1['address'],
+                    amount_in,
+                    min_amount_out,
+                    deadline,
+                    sender=flash_loan_contract.owner()
+                )
+                
+                # Execute the swap through the flash loan contract
+                swap_result = execute_swap(flash_loan_contract, router_contract, token0, token1, amount_in, min_amount_out, deadline)
                 
                 if swap_result:
                     print("Swap executed successfully")
@@ -134,11 +148,11 @@ def find_arbitrage(account, router_contract, token0: dict, token1: dict):
     return False
 
 # Example usage
-if __name__ == "__main__":
-    with networks.parse_network_choice("avalanche:mainnet-fork:foundry") as provider:
-    #with networks.avalanche.mainnet_fork.use_provider("foundry"):
-        account = impersonate_account()
-        router_contract = load_router_contract()
-        token0, token1 = load_token_contracts("0xc7198437980c041c805A1EDcbA50c1Ce5db95118", "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70")
+#if __name__ == "__main__":
+#    with networks.parse_network_choice("avalanche:mainnet-fork:foundry") as provider:
+#    #with networks.avalanche.mainnet_fork.use_provider("foundry"):
+#        account = impersonate_account()
+#        router_contract = load_router_contract()
+#        token0, token1 = load_token_contracts("0xc7198437980c041c805A1EDcbA50c1Ce5db95118", "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70")
     
-        find_arbitrage(account, router_contract, token0, token1)
+#        find_arbitrage(account, router_contract, token0, token1)
