@@ -33,9 +33,8 @@ tools = [
             get_positions_tool,
             close_all_positions_tool,
             close_a_position_tool,
-            # Traderjoe
-            
-            
+            # Traderjoe <-> Sushiswap
+            find_arbitrage_sushiswap_tool,
         ]
 
 prompt = ChatPromptTemplate.from_messages(
@@ -57,8 +56,7 @@ agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_pa
 print(
     agent_executor.invoke(
         {
-            "input": "Execute a flash loan arbitrage between the two tokens: DAI.e: 0xd586e7f844cea2f87f50152665bcbc2c279d8d70 & USDC.e 0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664 on Trader Joe using Aave flash loans"
+            "input": "Get the token addresses for: USDC & USDT. After you have retrieved the addresses finds arbitrage opportunities between TraderJoe and SushiSwap for the two given tokens on the Avalanche network."
         }
     )['output']
 )
-
