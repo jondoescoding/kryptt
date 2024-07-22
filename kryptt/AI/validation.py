@@ -5,10 +5,8 @@ from typing import Optional
 from langchain.pydantic_v1 import BaseModel, Field, validator
 
 
-class FlashLoanArbitrageInput(BaseModel):
-    token0_address: str = Field(description="The contract address of the first token for arbitrage")
-    token1_address: str = Field(description="The contract address of the second token for arbitrage")
-    
+
+
 # MoneyInput class is used to define the input structure for currency conversion operations.
 # It contains two fields: 'usd_coin_price' for the USD dollar value ($) of the coin and 'currency_to_convert_to' for the target currency.
 class MoneyInput(BaseModel):
@@ -115,3 +113,7 @@ class GetOrderByIdInput(BaseModel):
 
 class CancelOrderByIdInput(BaseModel):
     order_id: str = Field(description="The ID of the order to cancel")
+
+class FindArbitrageSushiswapInput(BaseModel):
+    token1_address: str = Field(description="The contract address of the first token")
+    token2_address: str = Field(description="The contract address of the second token")

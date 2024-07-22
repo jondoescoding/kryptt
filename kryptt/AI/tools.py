@@ -1,7 +1,6 @@
 # Local
 from config import GROQ_API_KEY, TAVILY_API_KEY
-from aave_tools import execute_flash_loan_arbitrage
-from validation import CoinGeckoFetchTokenInput, CoinGeckoFetchOHLCInput, CoinGeckoFetchTokenDataInput, MoneyInput, AIInput, CoinGeckoFetchTokensPriceInput, oneinchSearchTokensInput, oneinchGetManyTokensInput, GetOrderByIdInput, CancelOrderByIdInput, PostOrderInput, CloseAllPositionsInput, ClosePositionInput, FlashLoanArbitrageInput
+from validation import CoinGeckoFetchTokenInput, CoinGeckoFetchOHLCInput, CoinGeckoFetchTokenDataInput, MoneyInput, AIInput, CoinGeckoFetchTokensPriceInput, oneinchSearchTokensInput, oneinchGetManyTokensInput, GetOrderByIdInput, CancelOrderByIdInput, PostOrderInput, CloseAllPositionsInput, ClosePositionInput, FindArbitrageSushiswapInput
 from coin_gecko_tools import fetch_token, fetch_ohlc_by_id, fetch_coin_data, fetch_tokens_price
 from forex_tools import convert_coin_price
 from one_inch_tools import one_inch_search_tokens, oneinch_get_many_tokens
@@ -15,23 +14,14 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 from phi.assistant.python import PythonAssistant
 from phi.llm.groq import Groq
 
-
 # Web search
 tavily_tool = TavilySearchResults(max_results=10, tavily_api_key=TAVILY_API_KEY)
-
-# AAVE Tools
-flash_loan_arbitrage_tool = StructuredTool.from_function(
-    func=execute_flash_loan_arbitrage,
-    name="flash_loan_arbitrage_tool",
-    description="Execute a flash loan arbitrage between two tokens on Trader Joe using Aave flash loans",
-    args_schema=FlashLoanArbitrageInput
-)
 
 # 1inch Tools
 oneinch_search_tokens_tool = StructuredTool.from_function(
     func=one_inch_search_tokens,
     name="oneinch_search_tokens_tool",
-    description="This tool searches for a token's contract address based on its name, symbol and description",
+    description="This tool should be used to search token contract addresses. It searches for a single token's contract address based on its name OR symbol.",
     args_schema=oneinchSearchTokensInput
 )
 
@@ -83,7 +73,7 @@ coin_gecko_fetch_ohlc_tool = StructuredTool(
 
 coin_gecko_fetch_token_data_tool = StructuredTool(
     func=fetch_coin_data,
-    description="""This endpoint allows you to query all the coin data of a coin (name, price, market .... including exchange tickers) on CoinGecko coin page based on a particular coin id. The query from the user does not have to be exact. If it is close to what is available then use that. Should not  be used for contract tokenn retrieval""",
+    description="""This endpoint allows you to query all the coin data of a coin (name, price, market .... including exchange tickers) on CoinGecko coin page based on a particular coin id. The query from the user does not have to be exact. If it is close to what is available then use that. Should not be used for token contract address retrieval""",
     name="coin_gecko_fetch_token_data_tool",
     args_schema=CoinGeckoFetchTokenDataInput
 )
@@ -159,4 +149,14 @@ close_a_position_tool = StructuredTool.from_function(
     name="Close_A_Position_Alpaca",
     description="Closes a specific position on Alpaca.",
     args_schema=ClosePositionInput
+)
+
+# New tool for find_arbitrage_sushiswap
+from traderjoe_sushiswap import find_arbitrage_sushiswap
+
+find_arbitrage_sushiswap_tool = StructuredTool.from_function(
+    func=find_arbitrage_sushiswap,
+    name="find_arbitrage_sushiswap_tool",
+    description="Finds arbitrage opportunities between TraderJoe and SushiSwap for two given tokens on the Avalanche network",
+    args_schema=FindArbitrageSushiswapInput
 )
