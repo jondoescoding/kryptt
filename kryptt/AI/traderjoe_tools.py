@@ -9,7 +9,6 @@ NATIVE_TOKEN_ADDRESS = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"  # WAVAX on 
 def setup_avalanche():
     try:
         # Connect to the Avalanche network
-        #networks.default = "avalanche"
         with networks.parse_network_choice("avalanche:mainnet-fork:foundry") as provider:
             print("Connected to Avalanche mainnet")
     except Exception as e:
@@ -23,9 +22,9 @@ def impersonate_account():
     except Exception as e:
         raise Exception(f"Failed to impersonate account: {str(e)}")
 
-def load_router_contract():
+def load_router_contract(router_address: str):
     try:
-        router_contract = Contract(address="0x60aE616a2155Ee3d9A68541Ba4544862310933d4")
+        router_contract = Contract(address=router_address)
         print(f"Loaded router contract at address: {router_contract.address}")
         return router_contract
     except Exception as e:
@@ -62,16 +61,18 @@ def approve_tokens(account, token, router_address, amount):
             print("Not enough gas to perform the transaction")
             return False
 
+        token_ = Contract(token["address"])
+
         # Check if there's enough of token1 to be traded
-        token_balance = token.balanceOf(account)
+        token_balance = token_.balanceOf(account.address)
         if token_balance < amount:
-            print(f"Not enough {token.symbol()} to trade. Balance: {token_balance}, Required: {amount}")
+            print(f"Not enough {token_.symbol()} to trade. Balance: {token_balance}, Required: {amount}")
             return False
 
         # Approve the router to spend the maximum amount of tokens
         max_amount = 2**256 - 1
-        tx = token.approve(router_address, max_amount, sender=account)
-        print(f"Approved {token.symbol()} for trading. Transaction hash: {tx.txn_hash}")
+        tx = token_.approve(router_address, max_amount, sender=account)
+        print(f"Approved {token_.symbol()} for trading. Transaction hash: {tx.txn_hash}")
         return True
     except Exception as e:
         print(f"Error in approve_tokens: {str(e)}")
@@ -87,7 +88,7 @@ def execute_swap(account, router_contract, token_in, token_out, amount_in, min_a
         tx = router_contract.swapExactTokensForTokens(
             amount_in,
             min_amount_out,
-            [token_in.address, token_out.address],
+            [token_in["address"], token_out["address"]],
             account.address,
             deadline,
             sender=account
@@ -98,8 +99,9 @@ def execute_swap(account, router_contract, token_in, token_out, amount_in, min_a
         print(f"Error in execute_swap: {str(e)}")
         return False
 
-def find_arbitrage(account, router_contract, token0: dict, token1: dict):
+def find_arbitrage_traderjoe(account, router_contract, token0_address, token1_address):
     native_token = Contract(NATIVE_TOKEN_ADDRESS)
+    token0, token1 = load_token_contracts(token1_address=token0_address, token2_address=token1_address)
     
     for _ in tqdm(range(MAX_ITERATIONS), desc="Searching for arbitrage"):
         try:
