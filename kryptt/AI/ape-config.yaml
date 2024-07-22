@@ -9,14 +9,16 @@ plugins:
   - name: etherscan
 
 
+avalanche:
+  default_network: mainnet
+  mainnet:
+    default_provider: infura
+  mainnet_fork:
+    default_provider: foundry
+    uri: https://avalanche-mainnet.core.chainstack.com/ext/bc/C/rpc/f33804dd98cad6bc454e78ea22d84e82
+
 foundry:
-  host: auto
   fork:
     avalanche:
       mainnet:
-        upstream_provider: geth
-
-geth:
-  avalanche:
-    mainnet:
-      uri: https://avalanche-mainnet.core.chainstack.com/ext/bc/C/rpc/f33804dd98cad6bc454e78ea22d84e82
+        upstream_provider: alchemy
