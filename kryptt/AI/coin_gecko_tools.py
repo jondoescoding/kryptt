@@ -84,6 +84,9 @@ def fetch_ohlc_by_id(token_id: str, days: int | None):
         return {"error": str(e)}
 
 def fetch_coin_data(token_id: str, query: list[str]):
+    """
+    Fetches a detail breakdown of all the information on a token.
+    """
     url = f"https://api.coingecko.com/api/v3/coins/{token_id}"
     
     headers = {
