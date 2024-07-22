@@ -1,3 +1,4 @@
+from time import sleep
 from coin_gecko_tools import fetch_data
 from config import log
 
@@ -24,6 +25,7 @@ def one_inch_search_tokens(query: str):
     
     log.info("Sending request to 1inch API")
     response = fetch_data(full_url, headers)
+    sleep(5)
     
     if "error" not in response:
         log.success("Successfully retrieved token search results from 1inch API")
@@ -66,7 +68,7 @@ def oneinch_get_many_tokens(contract_addresses: str):
     
     # Construct the full URL with query parameters
     full_url = f"{url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
-    log.debug(f"Full URL constructed: {full_url}")
+    print(f"Full URL constructed: {full_url}")
     
     log.info("Sending request to 1inch API")
     response = fetch_data(full_url, headers)
