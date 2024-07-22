@@ -1,4 +1,3 @@
-import json
 from coin_gecko_tools import fetch_data
 from config import log
 
