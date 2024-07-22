@@ -33,9 +33,8 @@ tools = [
             get_positions_tool,
             close_all_positions_tool,
             close_a_position_tool,
-            # AAVE
-            flash_loan_arbitrage_tool,
             # Traderjoe
+            
             
         ]
 
