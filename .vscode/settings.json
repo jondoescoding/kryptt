@@ -1,0 +1,6 @@
+{
+    "solidity.remappings": [
+      "@aave/=node_modules/@aave/",
+      "@openzeppelin/=node_modules/@openzeppelin/"
+    ]
+  }
