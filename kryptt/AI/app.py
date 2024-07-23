@@ -34,7 +34,12 @@ tools = [
             close_all_positions_tool,
             close_a_position_tool,
             # Traderjoe <-> Sushiswap
+            find_arbitrage_sushiswap_traderjoe_tool,
             find_arbitrage_sushiswap_tool,
+            find_arbitrage_traderjoe_tool,
+            # Vectorbt Tools
+            predict_profit_tool,
+            backtest_trading_indicators_tool
         ]
 
 prompt = ChatPromptTemplate.from_messages(
@@ -53,10 +58,3 @@ agent = create_tool_calling_agent(LLM.groq70b, tools, prompt)
 
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_parsing_errors=True)
 
-print(
-    agent_executor.invoke(
-        {
-            "input": "Get the token addresses for: USDC & USDT. After you have retrieved the addresses finds arbitrage opportunities between TraderJoe and SushiSwap for the two given tokens on the Avalanche network."
-        }
-    )['output']
-)
