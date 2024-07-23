@@ -1,10 +1,14 @@
 # Local
 from config import GROQ_API_KEY, TAVILY_API_KEY
-from validation import CoinGeckoFetchTokenInput, CoinGeckoFetchOHLCInput, CoinGeckoFetchTokenDataInput, MoneyInput, AIInput, CoinGeckoFetchTokensPriceInput, oneinchSearchTokensInput, oneinchGetManyTokensInput, GetOrderByIdInput, CancelOrderByIdInput, PostOrderInput, CloseAllPositionsInput, ClosePositionInput, FindArbitrageSushiswapInput
+from traderjoe_tools import find_arbitrage_traderjoe
+from sushiswap_tools import find_arbitrage_sushiswap
+from validation import CoinGeckoFetchTokenInput, CoinGeckoFetchOHLCInput, CoinGeckoFetchTokenDataInput, MoneyInput, AIInput, CoinGeckoFetchTokensPriceInput, oneinchSearchTokensInput, oneinchGetManyTokensInput, GetOrderByIdInput, CancelOrderByIdInput, PostOrderInput, CloseAllPositionsInput, ClosePositionInput, FindArbitrageSushiswapInput, PredictProfitInput, BacktestTradingIndicatorsInput
 from coin_gecko_tools import fetch_token, fetch_ohlc_by_id, fetch_coin_data, fetch_tokens_price
 from forex_tools import convert_coin_price
 from one_inch_tools import one_inch_search_tokens, oneinch_get_many_tokens
 from alpaca_tools import get_accounts_details_alpaca, get_all_order_alpaca, get_order_by_id_alpaca, cancel_all_order_alpaca, cancel_order_by_id_alpaca, get_open_orders_alpaca, post_order_alpaca, get_positions_alpaca, close_all_positions, close_a_position
+from traderjoe_sushiswap import find_arbitrage_sushiswap_traderjoe
+from backtesting import predict_profit_from_the_past, backtest_with_trading_indicators
 
 # Langchain
 from langchain.tools import StructuredTool
@@ -21,14 +25,14 @@ tavily_tool = TavilySearchResults(max_results=10, tavily_api_key=TAVILY_API_KEY)
 oneinch_search_tokens_tool = StructuredTool.from_function(
     func=one_inch_search_tokens,
     name="oneinch_search_tokens_tool",
-    description="This tool should be used to search token contract addresses. It searches for a single token's contract address based on its name OR symbol.",
+    description="This tool should be used to search for a single token contract addresses. It searches for a single token's contract address based on its name OR symbol.",
     args_schema=oneinchSearchTokensInput
 )
 
 oneinch_get_many_tokens_tool = StructuredTool.from_function(
     func=oneinch_get_many_tokens,
     name="oneinch_get_many_tokens_tool",
-    description="Use this when you need comprehensive information about a single token or multiple tokens simultaneously, given their contract addresses on the Avalanche network (chain_id: 43114). It fetches data from the 1inch API, providing details such as token address, symbol, name, decimals, and logoURI for each token.",
+    description="This tool should be used to search for multiple token addresses. It uses the contract address to find relevant information on the given token.",
     args_schema=oneinchGetManyTokensInput
 )
 
@@ -52,14 +56,14 @@ python_assistant_tool = StructuredTool.from_function(
 convert_coin_price_tool = StructuredTool.from_function(
     func=convert_coin_price,
     name="convert_coin_price_tool",
-    description="This is a foreign exchange rate fiat currency convertion tool which is used to convert one currency into another. Example: A user asks to convert USD to JMD/JPY/EUR",
+    description="This is a foreign exchange rate fiat currency convertion tool which is used to convert one currency into another. Example: A user asks to convert USD to JMD/JPY/EUR or any other type of country's currency",
     args_schema=MoneyInput
 )
 
 # Coingecko tools
 coin_gecko_fetch_token_tool = StructuredTool.from_function(
     func=fetch_token,
-    description="Useful for finding tokens on the Coin Gecko Platform. This is a tool which is for retrieval of a token's ID from the coin gecko platform. It should be used before any other coin gecko tool in order to get the token's ID for other tools.",
+    description="This is a tool which is for retrieval of a token's ID from the coin gecko platform. It should be used before any other coin gecko tool in order to get the token's ID for other tools.",
     name="coin_gecko_fetch_token_tool",
     args_schema=CoinGeckoFetchTokenInput
 )
@@ -73,7 +77,7 @@ coin_gecko_fetch_ohlc_tool = StructuredTool(
 
 coin_gecko_fetch_token_data_tool = StructuredTool(
     func=fetch_coin_data,
-    description="""This endpoint allows you to query all the coin data of a coin (name, price, market .... including exchange tickers) on CoinGecko coin page based on a particular coin id. The query from the user does not have to be exact. If it is close to what is available then use that. Should not be used for token contract address retrieval""",
+    description="""This tool allows you to query all the coin data of a coin (name, price, market .... including exchange tickers) on CoinGecko based on a particular coin id. The query from the user does not have to be exact. If it is close to what is available then use that. Should not be used for token contract address retrieval""",
     name="coin_gecko_fetch_token_data_tool",
     args_schema=CoinGeckoFetchTokenDataInput
 )
@@ -151,12 +155,37 @@ close_a_position_tool = StructuredTool.from_function(
     args_schema=ClosePositionInput
 )
 
-# New tool for find_arbitrage_sushiswap
-from traderjoe_sushiswap import find_arbitrage_sushiswap
+find_arbitrage_sushiswap_traderjoe_tool = StructuredTool.from_function(
+    func=find_arbitrage_sushiswap_traderjoe,
+    name="find_arbitrage_sushiswap_traderjoe_tool",
+    description="Finds arbitrage opportunities between both TraderJoe AND SushiSwap for two given tokens on the Avalanche network",
+    args_schema=FindArbitrageSushiswapInput
+)
 
 find_arbitrage_sushiswap_tool = StructuredTool.from_function(
     func=find_arbitrage_sushiswap,
     name="find_arbitrage_sushiswap_tool",
-    description="Finds arbitrage opportunities between TraderJoe and SushiSwap for two given tokens on the Avalanche network",
+    description="Finds arbitrage opportunities within ONLY SushiSwap for two given tokens on the Avalanche network",
     args_schema=FindArbitrageSushiswapInput
+)
+
+find_arbitrage_traderjoe_tool = StructuredTool.from_function(
+    func=find_arbitrage_traderjoe,
+    name="find_arbitrage_traderjoe_tool",
+    description="Finds arbitrage opportunities within ONLY Traderjoe for two given tokens on the Avalanche network",
+    args_schema=FindArbitrageSushiswapInput
+)
+
+predict_profit_tool = StructuredTool.from_function(
+    func=predict_profit_from_the_past,
+    name="predict_profit_tool",
+    description="Predicts the potential profit based on the amount invested in a cryptocurrency using historical data.",
+    args_schema=PredictProfitInput
+)
+
+backtest_trading_indicators_tool = StructuredTool.from_function(
+    func=backtest_with_trading_indicators,
+    name="backtest_trading_indicators_tool",
+    description="Applies a specified trading indicator to given OHLCV data and returns the indicator result and profit.",
+    args_schema=BacktestTradingIndicatorsInput
 )

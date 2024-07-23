@@ -3,6 +3,7 @@ from typing import Optional
 
 # Langchain 
 from langchain.pydantic_v1 import BaseModel, Field, validator
+from datetime import datetime
 
 
 
@@ -117,3 +118,30 @@ class CancelOrderByIdInput(BaseModel):
 class FindArbitrageSushiswapInput(BaseModel):
     token1_address: str = Field(description="The contract address of the first token")
     token2_address: str = Field(description="The contract address of the second token")
+    
+
+class PredictProfitInput(BaseModel):
+    amount_invested: Optional[int] = Field(description="The amount of cash invested. If None, a default of 100 will be used.")
+    cryptocurrency: str = Field(description="The cryptocurrency symbol (e.g., 'BTC' for Bitcoin)")
+
+class BacktestTradingIndicatorsInput(BaseModel):
+    indicator: str = Field(description="The name of the indicator to use (e.g., 'STOCH', 'RSI', 'OBV', 'MSTD', 'MACD', 'MA', 'ATR')")
+    symbol: str = Field(description="The cryptocurrency symbol")
+    start_date: str = Field(description="The start date for the data in YYYY-MM-DD format")
+    end_date: str = Field(description="The end date for the data in YYYY-MM-DD format")
+
+    @validator('indicator')
+    def check_indicator(cls, value):
+        valid_indicators = ['STOCH', 'RSI', 'OBV', 'MSTD', 'MACD', 'MA', 'ATR']
+        if value.upper() not in valid_indicators:
+            raise ValueError(f"Invalid indicator. Must be one of: {', '.join(valid_indicators)}")
+        return value.upper()
+
+    @validator('start_date', 'end_date')
+    def check_date_format(cls, value):
+        try:
+            datetime.strptime(value, '%Y-%m-%d')
+        except ValueError:
+            raise ValueError("Incorrect date format, should be YYYY-MM-DD")
+        return value
+    
