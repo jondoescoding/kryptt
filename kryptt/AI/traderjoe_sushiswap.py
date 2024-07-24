@@ -8,8 +8,20 @@ TRADERJOE_ROUTER = "0x60aE616a2155Ee3d9A68541Ba4544862310933d4"
 SUSHISWAP_ROUTER = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"  # SushiSwap router on Avalanche
 
 def check_prices(router_contract, token_in, token_out, amount_in):
+    """
+    Get the expected output amount for a given input amount using the specified router contract.
+
+    Args:
+        router_contract (Contract): The router contract to use for price checking.
+        token_in (str): The contract address of the input token.
+        token_out (str): The contract address of the output token.
+        amount_in (int): The amount of the input token.
+
+    Returns:
+        int: The expected output amount of the output token.
+        0: If an error occurs during the price check.
+    """
     try:
-        # Get the expected output amount for a given input amount
         amounts_out = router_contract.getAmountsOut(amount_in, [token_in, token_out])
         return amounts_out[-1]
     except Exception as e:
@@ -17,12 +29,33 @@ def check_prices(router_contract, token_in, token_out, amount_in):
         return 0
 
 def arbitrage_opportunity(traderjoe_price, sushiswap_price, threshold=0.005):
+    """
+    Determine if there is an arbitrage opportunity between TraderJoe and SushiSwap prices.
+
+    Args:
+        traderjoe_price (float): The price of the token on TraderJoe.
+        sushiswap_price (float): The price of the token on SushiSwap.
+        threshold (float, optional): The minimum price difference ratio to consider an arbitrage opportunity. Defaults to 0.005.
+
+    Returns:
+        bool: True if there is an arbitrage opportunity, False otherwise.
+    """
     if traderjoe_price == 0 or sushiswap_price == 0:
         return False
     price_diff = abs(traderjoe_price - sushiswap_price) / min(traderjoe_price, sushiswap_price)
     return price_diff > threshold
 
 def find_arbitrage_sushiswap_traderjoe(token1_address, token2_address):
+    """
+    Find arbitrage opportunities between TraderJoe and SushiSwap for two given token addresses on the Avalanche network.
+
+    Args:
+        token1_address (str): The contract address of the first token.
+        token2_address (str): The contract address of the second token.
+
+    Returns:
+        str: A message indicating the final total profit from arbitrage opportunities.
+    """
     MAX_ITERATIONS = 2
     total_profit = 0
 

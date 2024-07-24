@@ -1,4 +1,6 @@
 import vectorbt as vbt
+from typing import Optional
+from datetime import datetime, timedelta
 
 def backtest_with_trading_indicators(indicator: str, symbol: str, start_date: str, end_date: str):
     """
@@ -88,16 +90,36 @@ def calculate_profit(price, entries, exits):
     total_return = pf.total_return()
     return(f"Total returns: {total_return}")
     #return total_return
-
 def get_ohlcv(symbols: list[str] | str, start_date: str, end_date: str):
+    """
+    Download OHLCV (Open, High, Low, Close, Volume) data for the given symbols within the specified date range.
+
+    Parameters:
+    - symbols (list[str] | str): A list of symbols or a single symbol to download data for.
+    - start_date (str): The start date for the data in YYYY-MM-DD format.
+    - end_date (str): The end date for the data in YYYY-MM-DD format.
+
+    Returns:
+    - ohlcv_by_symbol: The downloaded OHLCV data.
+    """
     print(f"Downloading OHLCV data for {symbols} from {start_date} to {end_date}")
     ohlcv_by_symbol = vbt.YFData.download(symbols, start=start_date, end=end_date)
     return ohlcv_by_symbol
 
-from typing import Optional
-from datetime import datetime, timedelta
 
 def predict_profit_from_the_past(amount_invested: Optional[int], cryptocurrency: str, start_date: Optional[str] = None, end_date: Optional[str] = None):
+    """
+    Predict the profit for a given cryptocurrency based on historical data.
+
+    Parameters:
+    - amount_invested (Optional[int]): The amount of cash invested. If None, a default of 100 will be used.
+    - cryptocurrency (str): The cryptocurrency symbol (e.g., 'BTC' for Bitcoin).
+    - start_date (Optional[str]): The start date for the data in YYYY-MM-DD format. If None, defaults to one year ago from today.
+    - end_date (Optional[str]): The end date for the data in YYYY-MM-DD format. If None, defaults to today.
+
+    Returns:
+    - dict: A dictionary containing the total return, sharpe ratio, max drawdown, initial investment, cryptocurrency, start date, and end date.
+    """
     print(f"Predicting profit for {cryptocurrency} with investment amount: {amount_invested}")
     
     # Set default date range if not provided

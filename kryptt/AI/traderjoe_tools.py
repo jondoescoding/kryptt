@@ -7,6 +7,15 @@ ROUTER_ADDRESS = "0x60aE616a2155Ee3d9A68541Ba4544862310933d4" # Traderjoe V1 Rou
 NATIVE_TOKEN_ADDRESS = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"  # WAVAX on Avalanche
 
 def setup_avalanche():
+    """
+    Connect to the Avalanche network.
+
+    Returns:
+        provider: The network provider for the Avalanche mainnet.
+    
+    Raises:
+        Exception: If the connection to the Avalanche network fails.
+    """
     try:
         # Connect to the Avalanche network
         with networks.parse_network_choice("avalanche:mainnet-fork:foundry") as provider:
@@ -16,6 +25,15 @@ def setup_avalanche():
         raise Exception(f"Failed to connect to Avalanche network: {str(e)}")
 
 def impersonate_account():
+    """
+    Impersonate a specific account.
+
+    Returns:
+        hot_wallet: The impersonated account object.
+    
+    Raises:
+        Exception: If impersonation of the account fails.
+    """
     try:
         hot_wallet = accounts['0xf89d7b9c864f589bbF53a82105107622B35EaA40']
         print(f"Impersonated account: {hot_wallet.address}")
@@ -24,6 +42,18 @@ def impersonate_account():
         return Exception(f"Failed to impersonate account: {str(e)}")
 
 def load_router_contract(router_address: str):
+    """
+    Load the router contract.
+
+    Args:
+        router_address (str): The address of the router contract.
+
+    Returns:
+        router_contract: The loaded router contract object.
+    
+    Raises:
+        Exception: If loading the router contract fails.
+    """
     try:
         router_contract = Contract(address=router_address)
         print(f"Loaded router contract at address: {router_contract.address}")
@@ -32,6 +62,19 @@ def load_router_contract(router_address: str):
         raise Exception(f"Failed to load router contract: {str(e)}")
 
 def load_token_contracts(token1_address, token2_address):
+    """
+    Load the token contracts.
+
+    Args:
+        token1_address (str): The address of the first token contract.
+        token2_address (str): The address of the second token contract.
+
+    Returns:
+        tuple: A tuple containing dictionaries with details of the two token contracts.
+    
+    Raises:
+        Exception: If loading the token contracts fails.
+    """
     try:
         token1_contract = Contract(token1_address)
         token2_contract = Contract(token2_address)
@@ -56,11 +99,22 @@ def load_token_contracts(token1_address, token2_address):
         raise Exception(f"Failed to load token contracts: {str(e)}")
 
 def approve_tokens(account, token, router_address, amount):
+    """
+    Approve the router to spend the specified amount of tokens.
+
+    Args:
+        account: The account object.
+        token: The token contract object.
+        router_address (str): The address of the router contract.
+        amount (int): The amount of tokens to approve.
+
+    Returns:
+        str: A message indicating the result of the approval process.
+    """
     try:
         # Check if there's enough gas (native token)
         if account.balance < 1e16:  # 0.01 AVAX
             return ("Not enough gas to perform the transaction")
-            #return False
 
         token_ = Contract(token["address"])
 
@@ -68,18 +122,30 @@ def approve_tokens(account, token, router_address, amount):
         token_balance = token_.balanceOf(account.address)
         if token_balance < amount:
             return (f"Not enough {token_.symbol()} to trade. Balance: {token_balance}, Required: {amount}")
-            #return False
 
         # Approve the router to spend the maximum amount of tokens
         max_amount = 2**256 - 1
         tx = token_.approve(router_address, max_amount, sender=account)
         return (f"Approved {token_.symbol()} for trading. Transaction hash: {tx.txn_hash}")
-        #return True
     except Exception as e:
         return (f"Error in approve_tokens: {str(e)}")
-        #return False
 
 def execute_swap(account, router_contract, token_in, token_out, amount_in, min_amount_out, deadline):
+    """
+    Execute a token swap.
+
+    Args:
+        account: The account object.
+        router_contract: The router contract object.
+        token_in: The input token contract object.
+        token_out: The output token contract object.
+        amount_in (int): The amount of input tokens.
+        min_amount_out (int): The minimum amount of output tokens.
+        deadline (int): The deadline for the swap.
+
+    Returns:
+        str: A message indicating the result of the swap execution.
+    """
     try:
         # Approve the router to spend token_in
         if not approve_tokens(account, token_in, router_contract.address, amount_in):
@@ -95,12 +161,22 @@ def execute_swap(account, router_contract, token_in, token_out, amount_in, min_a
             sender=account
         )
         return f"Swap executed. Transaction hash: {tx.txn_hash}"
-        #return True
     except Exception as e:
         return f"Error occured in execute_swap: {str(e)}"
-        #return False
 
 def find_arbitrage(account, router_contract, token0_address, token1_address):
+    """
+    Find arbitrage opportunities.
+
+    Args:
+        account: The account object.
+        router_contract: The router contract object.
+        token0_address (str): The address of the first token contract.
+        token1_address (str): The address of the second token contract.
+
+    Returns:
+        str: A message indicating the result of the arbitrage search.
+    """
     native_token = Contract(NATIVE_TOKEN_ADDRESS)
     token0, token1 = load_token_contracts(token1_address=token0_address, token2_address=token1_address)
     
@@ -129,18 +205,24 @@ def find_arbitrage(account, router_contract, token0_address, token1_address):
                 else:
                     print("Swap failed")
                 
-                #return True
                 return f"Successful swap. Here are the results: {swap_result}"
         
         except Exception as e:
             return (f"\nError occurred in finding arbitrage (find_arbitrage): {str(e)}")
-            #return False
     
     return ("\nNo arbitrage opportunities found after MAX_ITERATIONS")
-    #return False
-
 
 def find_arbitrage_traderjoe(token1_address: str, token2_address: str):
+    """
+    Find arbitrage opportunities within TraderJoe for two given tokens on the Avalanche network.
+
+    Args:
+        token1_address (str): The contract address of the first token.
+        token2_address (str): The contract address of the second token.
+
+    Returns:
+        str: A message indicating the results of the arbitrage search.
+    """
     with networks.parse_network_choice("avalanche:mainnet-fork:foundry") as provider:
         # Impersonate an account
         account = impersonate_account()
