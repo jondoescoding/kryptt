@@ -70,7 +70,7 @@ coin_gecko_fetch_token_tool = StructuredTool.from_function(
 
 coin_gecko_fetch_ohlc_tool = StructuredTool(
     func=fetch_ohlc_by_id,
-    description="This is a tool which is used to fetches the open, high, low and close pricing time series data (in USD) for a specific cryptocurrency from the Coin Gecko platform.",
+    description="This tool retrieves the Open High Low and Close price data for a requested token from the Coin Gecko platform. It needs the token_id and days in order to work. The token_id is what you use to identify the cryptocurrency. The token_id can be name, id, or symbol. The name of a cryptocurrency would be a simple string, eg: Curve, Bitcoin. The ids many times have a hypen in them, eg: curve-dao-token. Symbols sometimes start with $, eg: $BTC or $ETH. The days for which can be requested are ONLY: 1, 7, 14, 30, 90, 180, 365.",
     name="coin_gecko_fetch_ohlc_tool",
     args_schema=CoinGeckoFetchOHLCInput
 )
