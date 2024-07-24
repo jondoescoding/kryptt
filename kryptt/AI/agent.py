@@ -9,14 +9,13 @@ from langchain_core.prompts import ChatPromptTemplate
 tools = [
 
             # Coin Gecko
-            coin_gecko_fetch_ohlc_tool, # gets price data from the token 
-            #coin_gecko_fetch_token_tool, # gets the token from the large list
+            coin_gecko_fetch_ohlc_tool, # gets OHLC price data from the token
+            coin_gecko_fetch_token_tool, # gets the token from the large list
             coin_gecko_fetch_token_data_tool, # gets the misc data from the token
+            #coin_gecko_fetch_tokens_price_tool, # gets the price of a token
             # 1inch
-            oneinch_search_tokens_tool,
+            oneinch_search_tokens_tool, 
             oneinch_get_many_tokens_tool,
-            # Coin Gecko PT 2 -> Placed here since Groq runs tools in sequence
-            coin_gecko_fetch_tokens_price_tool, # gets the price of a token
             # Web search
             tavily_tool,
             # Data Analysis
@@ -24,7 +23,8 @@ tools = [
             # Forex
             convert_coin_price_tool,
             # Alpaca
-            get_accounts_details_tool, get_all_order_tool,
+            get_accounts_details_tool, 
+            get_all_order_tool,
             get_order_by_id_tool,
             cancel_all_order_tool,
             cancel_order_by_id_tool,
