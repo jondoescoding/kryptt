@@ -4,9 +4,8 @@ from tools import *
 
 # Langchain
 from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationChain
 
 tools = [
 
@@ -52,9 +51,9 @@ prompt = ChatPromptTemplate.from_messages(
             "system",
             "You are a cryptocurrency social monitor and trading assistant. You have access to the python programming language. Python should be used for: data analysis, data exploration and machine learning. If you don't know the answer to a question, apologize and say you don't know the answer to the question.",
         ),
-        ("placeholder", "{chat_history}"),
+        MessagesPlaceholder(variable_name="history"),
         ("human", "{input}"),
-        ("placeholder", "{agent_scratchpad}"),
+        ("placeholder", "{agent_scratchpad}")
     ]
 )
 
