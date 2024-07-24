@@ -54,7 +54,6 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-agent = create_tool_calling_agent(LLM.groq70b, tools, prompt)
+agent = create_tool_calling_agent(LLM.gpt4o, tools, prompt)
 
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_parsing_errors=True)
-
