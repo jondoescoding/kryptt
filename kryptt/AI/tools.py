@@ -63,7 +63,7 @@ convert_coin_price_tool = StructuredTool.from_function(
 # Coingecko tools
 coin_gecko_fetch_token_tool = StructuredTool.from_function(
     func=fetch_token,
-    description="This is a tool which is for retrieval of a token's ID from the coin gecko platform. It should be used before any other coin gecko tool in order to get the token's ID for other tools.",
+    description="This is a tool which is for retrieval of a token's ID from the coin gecko platform. It should be used before any other coin gecko tool in order to get the token's ID for other tools which interact with the Coin Gecko Platform.",
     name="coin_gecko_fetch_token_tool",
     args_schema=CoinGeckoFetchTokenInput
 )
@@ -77,14 +77,14 @@ coin_gecko_fetch_ohlc_tool = StructuredTool(
 
 coin_gecko_fetch_token_data_tool = StructuredTool(
     func=fetch_coin_data,
-    description="""This tool allows you to query all the coin data of a coin (name, price, market .... including exchange tickers) on CoinGecko based on a particular coin id. The query from the user does not have to be exact. If it is close to what is available then use that. Should not be used for token contract address retrieval""",
+    description="""This tool allows you to query ALL token data (name, price, market .... including exchange tickers) on CoinGecko based on a particular token_id. The query from the user does not have to be exact. If it is close to what is available then use that. Should not be used for token contract address retrieval.""",
     name="coin_gecko_fetch_token_data_tool",
     args_schema=CoinGeckoFetchTokenDataInput
 )
 
 coin_gecko_fetch_tokens_price_tool = StructuredTool(
     func=fetch_tokens_price,
-    description="This tool fetches the current price in USD for one or more cryptocurrency tokens from the CoinGecko platform. It can accept either a single token ID or a list of token IDs.",
+    description="This tool fetches the current price (in USD) for one OR more tokens from the CoinGecko platform. It can accept either a single token ID or a list of token IDs.",
     name="coin_gecko_fetch_tokens_price_tool",
     args_schema=CoinGeckoFetchTokensPriceInput
 )
@@ -158,7 +158,7 @@ close_a_position_tool = StructuredTool.from_function(
 find_arbitrage_sushiswap_traderjoe_tool = StructuredTool.from_function(
     func=find_arbitrage_sushiswap_traderjoe,
     name="find_arbitrage_sushiswap_traderjoe_tool",
-    description="Finds arbitrage opportunities between both TraderJoe AND SushiSwap for two given tokens on the Avalanche network",
+    description="Finds arbitrage opportunities between ONLY both TraderJoe AND SushiSwap for two given token addresses on ONLY the Avalanche network",
     args_schema=FindArbitrageSushiswapInput
 )
 
@@ -179,13 +179,13 @@ find_arbitrage_traderjoe_tool = StructuredTool.from_function(
 predict_profit_tool = StructuredTool.from_function(
     func=predict_profit_from_the_past,
     name="predict_profit_tool",
-    description="Predicts the potential profit based on the amount invested in a cryptocurrency using historical data.",
+    description="Predicts the percentage potential profit based on the amount invested in a cryptocurrency using historical data.",
     args_schema=PredictProfitInput
 )
 
 backtest_trading_indicators_tool = StructuredTool.from_function(
     func=backtest_with_trading_indicators,
     name="backtest_trading_indicators_tool",
-    description="Applies a specified trading indicator to given OHLCV data and returns the indicator result and profit.",
+    description="Applies a specific trading indicator to given OHLCV data and returns the profit.",
     args_schema=BacktestTradingIndicatorsInput
 )
