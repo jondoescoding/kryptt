@@ -12,14 +12,24 @@ from backtesting import predict_profit_from_the_past, backtest_with_trading_indi
 
 # Langchain
 from langchain.tools import StructuredTool
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_community.retrievers import TavilySearchAPIRetriever
 
 # Phidata
 from phi.assistant.python import PythonAssistant
 from phi.llm.groq import Groq
 
 # Web search
-tavily_tool = TavilySearchResults(max_results=10, tavily_api_key=TAVILY_API_KEY)
+tavily = TavilySearchAPIRetriever(k=5, tavily_api_key=TAVILY_API_KEY)
+
+def tavily_invoke_func(message: str):
+    return tavily.invoke(message)
+
+tavily_tool = StructuredTool(
+    name="web_search_tool",
+    func=tavily_invoke_func,
+    description="This tool is useful for when you need to answer questions about current events.",
+    args_schema=AIInput
+)
 
 # 1inch Tools
 oneinch_search_tokens_tool = StructuredTool.from_function(
