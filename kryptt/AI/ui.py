@@ -25,11 +25,9 @@ def main(page: ft.Page):
             page.update()
 
             # Call the agent_executor
-            #response = agent_executor.stream({"input": user_message})
-            
-            ai_response = [print(chunk) for chunk in agent_executor.stream({"input": user_message})]
-            
-            chat.controls.append(ft.Text(f"AI: {ai_response}", selectable=True))
+            response = agent_executor.invoke({"input": user_message})['output']
+
+            chat.controls.append(ft.Text(f"AI: {response}", selectable=True))
             page.update()
 
     send_button = ft.IconButton(
