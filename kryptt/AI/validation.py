@@ -5,9 +5,6 @@ from typing import Optional
 from langchain.pydantic_v1 import BaseModel, Field, validator
 from datetime import datetime
 
-
-
-
 # MoneyInput class is used to define the input structure for currency conversion operations.
 # It contains two fields: 'usd_coin_price' for the USD dollar value ($) of the coin and 'currency_to_convert_to' for the target currency.
 class MoneyInput(BaseModel):
