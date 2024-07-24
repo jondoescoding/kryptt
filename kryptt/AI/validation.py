@@ -70,7 +70,7 @@ class CoinGeckoFetchTokenDataInput(BaseModel):
         return value
 
 class CoinGeckoFetchTokensPriceInput(BaseModel):
-    token_ids: str | list[str] = Field(description="A single token ID or a list of token IDs to fetch prices for. The token ID should be one from the Coin Gecko platform. As such it should be fetched first.")
+    token_ids: str | list[str] = Field(description="A single token ID or a list of token IDs to fetch prices for. The token ID should be one from the Coin Gecko platform and as such it should be fetched first.")
 
     @validator('token_ids')
     def check_token_ids(cls, value):
