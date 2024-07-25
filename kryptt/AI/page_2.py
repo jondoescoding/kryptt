@@ -185,5 +185,5 @@ class NewsView(ft.View):
         await self.chat_interface.send_message(e)
 
     def did_mount(self):
-        self.chat_interface.add_message("Kryptt", "Hello! I'm Kryptt, your cryptocurrency social monitor and trading assistant. How can I help you today?")
+        self.chat_interface.add_message("Kryptt", "Hello! I'm Kryptt, your cryptocurrency social monitor and trading assistant. Ask me about any articles on the left and I'll give you a brief summary.")
         self.update()

@@ -46,7 +46,7 @@ class ChatView(ft.View):
         
         self.send_button.on_click = self.send_message
         self.new_message.on_submit = self.send_message
-        self.add_message("Kryptt", "Hello! I'm Kryptt, your cryptocurrency social monitor and trading assistant. How can I help you today?")
+        self.add_message("Kryptt", "Hello! I'm Kryptt, your cryptocurrency social monitor and trading assistant. Ask me what tools I have availabe to get started.")
 
     def on_sidebar_change(self, e):
         if e.control.selected_index == 0:  # Home button clicked
