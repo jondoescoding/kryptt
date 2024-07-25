@@ -24,7 +24,7 @@ def get_news_from_newscatcher() -> list:
     
     logger.debug("Setting up Newscatcher API client")   
     # Newscatcher API
-    newscatcher = Newscatcher(api_key=os.getenv('NEWS_API'))
+    newscatcher = Newscatcher(api_key=os.getenv('NEWS_API_KEY'))
     
     try:
         response = newscatcher.search.get(q="DeFi, Cryptocurrency, NFTs",

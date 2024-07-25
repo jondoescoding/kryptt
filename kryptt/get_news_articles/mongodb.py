@@ -14,10 +14,11 @@ from loguru import logger
 load_dotenv('.env')
 
 # MongoDB
-atlas_user = os.environ['ATLAS_USER']
-atlas_pass = os.environ['ATLAS_PASS']
+ATLAS_USERNAME = os.getenv("ATLAS_USERNAME")
+ATLAS_PASSWORD = os.getenv("ATLAS_PASSWORD")
 
-URI = f"mongodb+srv://{atlas_user}:{atlas_pass}@serverlessinstance1.2pjfhb1.mongodb.net/?retryWrites=true&w=majority&appName=ServerlessInstance1"
+# MongoDB connection setup
+URI = f"mongodb+srv://{ATLAS_USERNAME}:{ATLAS_PASSWORD}@serverlessinstance1.2pjfhb1.mongodb.net/?retryWrites=true&w=majority&appName=ServerlessInstance1"
 
 # Create a new client and connect to the server
 client = MongoClient(URI, server_api=ServerApi('1'))
