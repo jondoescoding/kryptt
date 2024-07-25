@@ -21,8 +21,8 @@ class CoinGeckoFetchOHLCInput(BaseModel):
     token_id: str = Field(description="From the coin gecko platform you able to identify a cryptocurrency by its name, id, or symbol. Symbols sometimes start with $, eg: $BTC or $ETH. The ids many times have a hypen in them, eg: curve-dao-token. The name of a cryptocurrency would be a simple string, eg: Curve, Bitcoin.")
     days: int = Field(description="The total days of how far back we can retrieve data from in days. The options ONLY can be: 1, 7, 14, 30, 90, 180, 365.")
     
-    @validator('days')
-    def check_date(cls, value):
+    @validator('days', allow_reuse=True)
+    def check_days(cls, value):
         allowed_time_periods = [1, 7, 14, 30, 90, 180, 365]
         if value not in allowed_time_periods:
             raise ValueError('Date range can only be: 1, 7, 14, 30, 90, 180, 365!')
@@ -32,13 +32,13 @@ class CoinGeckoFetchTokenDataInput(BaseModel):
     token_id: str = Field(description="The id of the cryptocurrency on CoinGecko. This can be found on the CoinGecko website or via the /coins/list endpoint.")
     query: list[str] = Field(description="List of keys to retrieve from the CoinGecko API response.")
     
-    @validator('token_id')
-    def check_token_id(cls, value):
+    @validator('token_id', allow_reuse=True)
+    def check_token_ids(cls, value):
         if not value:
             raise ValueError('Token ID cannot be empty!')
         return value
     
-    @validator('query')
+    @validator('query', allow_reuse=True)
     def check_query(cls, value):
         valid_keys = [
             "id", "symbol", "name", "web_slug", "asset_platform_id", "platforms", "repos_url", "github", "subreddit_url"
@@ -72,7 +72,7 @@ class CoinGeckoFetchTokenDataInput(BaseModel):
 class CoinGeckoFetchTokensPriceInput(BaseModel):
     token_ids: str | list[str] = Field(description="A single token ID or a list of token IDs to fetch prices for. The token ID should be one from the Coin Gecko platform and as such it should be fetched first.")
 
-    @validator('token_ids')
+    @validator('token_ids', allow_reuse=True)
     def check_token_ids(cls, value):
         if isinstance(value, str):
             if not value.strip():
@@ -127,18 +127,24 @@ class BacktestTradingIndicatorsInput(BaseModel):
     start_date: str = Field(description="The start date for the data in YYYY-MM-DD format")
     end_date: str = Field(description="The end date for the data in YYYY-MM-DD format")
 
-    @validator('indicator')
+    @validator('indicator', allow_reuse=True)
     def check_indicator(cls, value):
         valid_indicators = ['STOCH', 'RSI', 'OBV', 'MSTD', 'MACD', 'MA', 'ATR']
         if value.upper() not in valid_indicators:
             raise ValueError(f"Invalid indicator. Must be one of: {', '.join(valid_indicators)}")
         return value.upper()
 
-    @validator('start_date', 'end_date')
+    @validator('start_date', 'end_date', allow_reuse=True)
     def check_date_format(cls, value):
         try:
             datetime.strptime(value, '%Y-%m-%d')
         except ValueError:
             raise ValueError("Incorrect date format, should be YYYY-MM-DD")
         return value
-    
+
+class ImageDecoderInput(BaseModel):
+    image_data: str = Field(description="Base64 encoded image data to be decoded")
+    filename: str = Field(default="decoded_image.png", description="Name of the file to save the decoded image as")
+
+class E2BCodeInterpreterInput(BaseModel):
+    code: str = Field(description="Python code to execute.")
