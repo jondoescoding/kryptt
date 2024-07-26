@@ -42,7 +42,7 @@ tools = [
             find_arbitrage_sushiswap_tool,
             find_arbitrage_traderjoe_tool,
             # Vectorbt Tools
-            predict_profit_tool,
+            #predict_profit_tool,
             backtest_trading_indicators_tool,
         ]
 
@@ -72,4 +72,4 @@ agent_executor = AgentExecutor(
 
 #print(agent_executor.invoke({"input": "Get the token addresses for: USDT.e & USDC.e. After you have retrieved the addresses find arbitrage opportunities between TraderJoe and SushiSwap for the two given tokens on the Avalanche network."})['output'])
 
-print(agent_executor.invoke({"input": "tell me about all assest available on Alpaca"})['output'])
+#print(agent_executor.invoke({"input": "Using python, predict the price of BTC using the data from the last 7 days. After which place buy or sell orders on Alpaca based on your prediction. After I want a written report on your orders in markdown."})['output'])
