@@ -2,11 +2,11 @@
 from config import GROQ_API_KEY, TAVILY_API_KEY
 from traderjoe_tools import find_arbitrage_traderjoe
 from sushiswap_tools import find_arbitrage_sushiswap
-from validation import CoinGeckoFetchTokenInput, CoinGeckoFetchOHLCInput, CoinGeckoFetchTokenDataInput, MoneyInput, AIInput, CoinGeckoFetchTokensPriceInput, oneinchSearchTokensInput, oneinchGetManyTokensInput, GetOrderByIdInput, CancelOrderByIdInput, PostOrderInput, CloseAllPositionsInput, ClosePositionInput, FindArbitrageSushiswapInput, PredictProfitInput, BacktestTradingIndicatorsInput
+from validation import CoinGeckoFetchTokenInput, CoinGeckoFetchOHLCInput, CoinGeckoFetchTokenDataInput, MoneyInput, AIInput, CoinGeckoFetchTokensPriceInput, oneinchSearchTokensInput, oneinchGetManyTokensInput, GetOrderByIdInput, CancelOrderByIdInput, PostOrderInput, CloseAllPositionsInput, ClosePositionInput, FindArbitrageSushiswapInput, PredictProfitInput, BacktestTradingIndicatorsInput, GetAssetsInput, IsAssetTradableInput
 from coin_gecko_tools import fetch_token, fetch_ohlc_by_id, fetch_coin_data, fetch_tokens_price
 from forex_tools import convert_coin_price
 from one_inch_tools import one_inch_search_tokens, oneinch_get_many_tokens
-from alpaca_tools import get_accounts_details_alpaca, get_all_order_alpaca, get_order_by_id_alpaca, cancel_all_order_alpaca, cancel_order_by_id_alpaca, get_open_orders_alpaca, post_order_alpaca, get_positions_alpaca, close_all_positions, close_a_position
+from alpaca_tools import get_accounts_details_alpaca, get_all_order_alpaca, get_order_by_id_alpaca, cancel_all_order_alpaca, cancel_order_by_id_alpaca, get_open_orders_alpaca, post_order_alpaca, get_positions_alpaca, close_all_positions, close_a_position, get_all_assets_alpaca, is_asset_tradable_alpaca
 from traderjoe_sushiswap import find_arbitrage_sushiswap_traderjoe
 from backtesting import predict_profit_from_the_past, backtest_with_trading_indicators
 from utilities import tavily_invoke_func, e2b_code_interpreter_func
@@ -204,4 +204,18 @@ e2b_code_interpreter_tool = StructuredTool.from_function(
     name="e2b_code_interpreter",
     description="Execute Python code in a Jupyter notebook cell and returns any rich data (e.g., charts), stdout, stderr, and error.",
     args_schema=E2BCodeInterpreterInput
+)
+
+get_all_assets_tool = StructuredTool.from_function(
+    func=get_all_assets_alpaca,
+    name="Get_All_Assets_Alpaca",
+    description="Fetches a list of assets from Alpaca. Can be filtered by asset class.",
+    args_schema=GetAssetsInput
+)
+
+is_asset_tradable_tool = StructuredTool.from_function(
+    func=is_asset_tradable_alpaca,
+    name="Is_Asset_Tradable_Alpaca",
+    description="Checks if a particular asset is tradable on Alpaca.",
+    args_schema=IsAssetTradableInput
 )

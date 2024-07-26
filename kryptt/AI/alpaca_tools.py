@@ -3,8 +3,9 @@ from typing import Optional
 
 # Alpaca Imports
 from alpaca.trading.client import TradingClient
-from alpaca.trading.requests import MarketOrderRequest, LimitOrderRequest, StopOrderRequest, StopLimitOrderRequest
-from alpaca.trading.enums import OrderSide, TimeInForce, OrderType
+from alpaca.trading.enums import OrderSide, TimeInForce, OrderType, AssetClass, QueryOrderStatus
+from alpaca.trading.requests import GetOrdersRequest, GetAssetsRequest, MarketOrderRequest, LimitOrderRequest, StopOrderRequest, StopLimitOrderRequest
+
 
 # Local Imports
 from config import ALPACA_API_KEY, ALPACA_SECRET_KEY
@@ -111,7 +112,16 @@ def get_open_orders_alpaca():
     """
     print("Fetching open orders from Alpaca")
     try:
-        open_orders = TRADING_CLIENT.get_orders(status='open')
+        # Create a GetOrdersRequest object for open orders
+        request_params = GetOrdersRequest(
+            status=QueryOrderStatus.OPEN,
+            limit=100,  # You can adjust this limit as needed
+            nested=True  # Include nested multi-leg orders
+        )
+        
+        # Fetch the open orders using the request parameters
+        open_orders = TRADING_CLIENT.get_orders(filter=request_params)
+        
         print(f"Open orders: {open_orders}")
         return f"Here are your open orders: {open_orders}"
     except Exception as e:
@@ -195,8 +205,7 @@ def get_positions_alpaca():
     """
     print("Fetching positions from Alpaca")
     try:
-        account_id = TRADING_CLIENT.get_account().id
-        positions = TRADING_CLIENT.get_all_positions_for_account(account_id=account_id)
+        positions = TRADING_CLIENT.get_all_positions()
         print(f"Positions: {positions}")
         return f"Here are your positions: {positions}"
     except Exception as e:
@@ -238,3 +247,42 @@ def close_a_position(symbol_or_asset_id: str, close_options: Optional[dict] = No
         return f"Position for asset {symbol_or_asset_id} has been closed: {close_response}"
     except Exception as e:
         return f"Error closing position for asset {symbol_or_asset_id}: {e}"
+
+def get_all_assets_alpaca(asset_class: Optional[AssetClass] = None):
+    """
+    Fetches a list of assets from Alpaca.
+
+    Args:
+        asset_class (Optional[AssetClass]): The asset class to filter by. If None, all assets are returned.
+
+    Returns:
+        str: A message with the list of assets if the request is successful.
+    """
+    print("Fetching list of assets from Alpaca")
+    try:
+        search_params = GetAssetsRequest(asset_class=asset_class) if asset_class else None
+        assets = TRADING_CLIENT.get_all_assets(search_params)
+        print(f"Assets: {assets}")
+        return f"Here is the list of assets: {assets}"
+    except Exception as e:
+        return f"Error fetching list of assets: {e}"
+
+def is_asset_tradable_alpaca(symbol: str):
+    """
+    Checks if a particular asset is tradable on Alpaca.
+
+    Args:
+        symbol (str): The symbol of the asset to check.
+
+    Returns:
+        str: A message indicating whether the asset is tradable or not.
+    """
+    print(f"Checking if {symbol} is tradable on Alpaca")
+    try:
+        asset = TRADING_CLIENT.get_asset(symbol)
+        if asset.tradable:
+            return f"{symbol} is tradable on Alpaca."
+        else:
+            return f"{symbol} is not tradable on Alpaca."
+    except Exception as e:
+        return f"Error checking if {symbol} is tradable: {e}"

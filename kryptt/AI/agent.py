@@ -35,13 +35,15 @@ tools = [
             get_positions_tool,
             close_all_positions_tool,
             close_a_position_tool,
+            get_all_assets_tool,  
+            is_asset_tradable_tool,
             # Traderjoe <-> Sushiswap
             find_arbitrage_sushiswap_traderjoe_tool,
             find_arbitrage_sushiswap_tool,
             find_arbitrage_traderjoe_tool,
             # Vectorbt Tools
             predict_profit_tool,
-            backtest_trading_indicators_tool
+            backtest_trading_indicators_tool,
         ]
 
 memory = ConversationBufferMemory(return_messages=True)
@@ -70,4 +72,4 @@ agent_executor = AgentExecutor(
 
 #print(agent_executor.invoke({"input": "Get the token addresses for: USDT.e & USDC.e. After you have retrieved the addresses find arbitrage opportunities between TraderJoe and SushiSwap for the two given tokens on the Avalanche network."})['output'])
 
-print(agent_executor.invoke({"input": "Post a buy order for 100 USD worth of ETH at market price"})['output'])
+print(agent_executor.invoke({"input": "tell me about all assest available on Alpaca"})['output'])

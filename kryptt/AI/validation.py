@@ -1,6 +1,9 @@
 # Python
 from typing import Optional
 
+# Alpaca
+from alpaca.trading.enums import AssetClass
+
 # Langchain 
 from langchain.pydantic_v1 import BaseModel, Field, validator
 from datetime import datetime
@@ -163,3 +166,9 @@ class ImageDecoderInput(BaseModel):
 
 class E2BCodeInterpreterInput(BaseModel):
     code: str = Field(description="Python code to execute.")
+
+class GetAssetsInput(BaseModel):
+    asset_class: Optional[AssetClass] = Field(default=None, description="The asset class to filter by (e.g., AssetClass.US_EQUITY). If None, all assets are returned.")
+
+class IsAssetTradableInput(BaseModel):
+    symbol: str = Field(description="The symbol of the asset to check for tradability")
