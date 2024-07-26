@@ -145,7 +145,7 @@ def post_order_alpaca(symbol: str, qty: float, side: str, order_type: str, limit
     print(f"Posting order to Alpaca for {symbol}")
     try:
         # Ensure symbol is in the correct format
-        formatted_symbol = f"{symbol.upper()}/USD" if '/' not in symbol else symbol.upper()
+        #formatted_symbol = f"{symbol.upper()}/USD" if '/' not in symbol else symbol.upper()
         
         # Determine the order side
         order_side = OrderSide.BUY if side.lower() == 'buy' else OrderSide.SELL
@@ -153,14 +153,14 @@ def post_order_alpaca(symbol: str, qty: float, side: str, order_type: str, limit
         # Prepare the order data based on the order type
         if order_type.lower() == 'market':
             order_data = MarketOrderRequest(
-                symbol=formatted_symbol,
+                symbol=symbol,
                 qty=qty,
                 side=order_side,
                 time_in_force=TimeInForce.GTC
             )
         elif order_type.lower() == 'limit':
             order_data = LimitOrderRequest(
-                symbol=formatted_symbol,
+                symbol=symbol,
                 qty=qty,
                 side=order_side,
                 time_in_force=TimeInForce.GTC,
@@ -168,7 +168,7 @@ def post_order_alpaca(symbol: str, qty: float, side: str, order_type: str, limit
             )
         elif order_type.lower() == 'stop':
             order_data = StopOrderRequest(
-                symbol=formatted_symbol,
+                symbol=symbol,
                 qty=qty,
                 side=order_side,
                 time_in_force=TimeInForce.GTC,
@@ -176,7 +176,7 @@ def post_order_alpaca(symbol: str, qty: float, side: str, order_type: str, limit
             )
         elif order_type.lower() == 'stop_limit':
             order_data = StopLimitOrderRequest(
-                symbol=formatted_symbol,
+                symbol=symbol,
                 qty=qty,
                 side=order_side,
                 time_in_force=TimeInForce.GTC,
@@ -189,7 +189,7 @@ def post_order_alpaca(symbol: str, qty: float, side: str, order_type: str, limit
         # Submit the order
         submitted_order = TRADING_CLIENT.submit_order(order_data=order_data)
         print(f"Order submitted: {submitted_order}")
-        return f"Order has been submitted: {submitted_order}"
+        return f"Here is a breakdown of the order has been submitted: \n{submitted_order}"
     except Exception as e:
         return f"Error posting order: {e}"
 
