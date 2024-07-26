@@ -67,3 +67,7 @@ agent_executor = AgentExecutor(
     handle_parsing_errors=True,
     memory=memory
 )
+
+#print(agent_executor.invoke({"input": "Get the token addresses for: USDT.e & USDC.e. After you have retrieved the addresses find arbitrage opportunities between TraderJoe and SushiSwap for the two given tokens on the Avalanche network."})['output'])
+
+print(agent_executor.invoke({"input": "Post a buy order for 100 USD worth of ETH at market price"})['output'])

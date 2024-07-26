@@ -102,9 +102,24 @@ class ClosePositionInput(BaseModel):
 
 class PostOrderInput(BaseModel):
     symbol: str = Field(description="The symbol of the asset to trade")
-    qty: int = Field(description="The quantity of the asset to buy or sell")
-    order_side: str = Field(description="The side of the trade (BUY or SELL)")
-    time_in_force: str = Field(description="The duration for which the order is valid")
+    qty: float = Field(description="The quantity of the asset to buy or sell")
+    side: str = Field(description="The side of the trade (buy or sell)")
+    order_type: str = Field(description="The type of the order (market, limit, stop, stop_limit)")
+    limit_price: Optional[float] = Field(default=None, description="The limit price for limit and stop-limit orders")
+    stop_price: Optional[float] = Field(default=None, description="The stop price for stop and stop-limit orders")
+
+    @validator('side')
+    def validate_side(cls, v):
+        if v.lower() not in ['buy', 'sell']:
+            raise ValueError('Side must be either "buy" or "sell"')
+        return v.lower()
+
+    @validator('order_type')
+    def validate_type(cls, v):
+        if v.lower() not in ['market', 'limit', 'stop', 'stop_limit']:
+            raise ValueError('Type must be one of "market", "limit", "stop", or "stop_limit"')
+        return v.lower()
+
 
 class GetOrderByIdInput(BaseModel):
     order_id: str = Field(description="The ID of the order to fetch")

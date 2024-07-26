@@ -140,7 +140,7 @@ get_open_orders_tool = StructuredTool.from_function(
 post_order_tool = StructuredTool.from_function(
     func=post_order_alpaca,
     name="Post_Order_Alpaca",
-    description="Posts an order to Alpaca.",
+    description="Posts an order to Alpaca. Supports market, limit, stop, and stop-limit orders.",
     args_schema=PostOrderInput
 )
 
