@@ -104,7 +104,7 @@ class ClosePositionInput(BaseModel):
 
 
 class PostOrderInput(BaseModel):
-    symbol: str = Field(description="The symbol of the asset to trade")
+    symbol: str = Field(description="The symbol of the asset to trade. It has to end wit /USD. So if a user were to give you BTC, the end result should be: BTC/USD")
     qty: float = Field(description="The quantity of the asset to buy or sell")
     side: str = Field(description="The side of the trade (buy or sell)")
     order_type: str = Field(description="The type of the order (market, limit, stop, stop_limit)")
