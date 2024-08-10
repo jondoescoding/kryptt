@@ -1,11 +1,12 @@
 # Python
 from typing import Optional
 
+# Alpaca
+from alpaca.trading.enums import AssetClass
+
 # Langchain 
 from langchain.pydantic_v1 import BaseModel, Field, validator
-
-
-
+from datetime import datetime
 
 # MoneyInput class is used to define the input structure for currency conversion operations.
 # It contains two fields: 'usd_coin_price' for the USD dollar value ($) of the coin and 'currency_to_convert_to' for the target currency.
@@ -23,8 +24,8 @@ class CoinGeckoFetchOHLCInput(BaseModel):
     token_id: str = Field(description="From the coin gecko platform you able to identify a cryptocurrency by its name, id, or symbol. Symbols sometimes start with $, eg: $BTC or $ETH. The ids many times have a hypen in them, eg: curve-dao-token. The name of a cryptocurrency would be a simple string, eg: Curve, Bitcoin.")
     days: int = Field(description="The total days of how far back we can retrieve data from in days. The options ONLY can be: 1, 7, 14, 30, 90, 180, 365.")
     
-    @validator('days')
-    def check_date(cls, value):
+    @validator('days', allow_reuse=True)
+    def check_days(cls, value):
         allowed_time_periods = [1, 7, 14, 30, 90, 180, 365]
         if value not in allowed_time_periods:
             raise ValueError('Date range can only be: 1, 7, 14, 30, 90, 180, 365!')
@@ -34,13 +35,13 @@ class CoinGeckoFetchTokenDataInput(BaseModel):
     token_id: str = Field(description="The id of the cryptocurrency on CoinGecko. This can be found on the CoinGecko website or via the /coins/list endpoint.")
     query: list[str] = Field(description="List of keys to retrieve from the CoinGecko API response.")
     
-    @validator('token_id')
-    def check_token_id(cls, value):
+    @validator('token_id', allow_reuse=True)
+    def check_token_ids(cls, value):
         if not value:
             raise ValueError('Token ID cannot be empty!')
         return value
     
-    @validator('query')
+    @validator('query', allow_reuse=True)
     def check_query(cls, value):
         valid_keys = [
             "id", "symbol", "name", "web_slug", "asset_platform_id", "platforms", "repos_url", "github", "subreddit_url"
@@ -72,9 +73,9 @@ class CoinGeckoFetchTokenDataInput(BaseModel):
         return value
 
 class CoinGeckoFetchTokensPriceInput(BaseModel):
-    token_ids: str | list[str] = Field(description="A single token ID or a list of token IDs to fetch prices for.")
+    token_ids: str | list[str] = Field(description="A single token ID or a list of token IDs to fetch prices for. The token ID should be one from the Coin Gecko platform and as such it should be fetched first.")
 
-    @validator('token_ids')
+    @validator('token_ids', allow_reuse=True)
     def check_token_ids(cls, value):
         if isinstance(value, str):
             if not value.strip():
@@ -103,10 +104,25 @@ class ClosePositionInput(BaseModel):
 
 
 class PostOrderInput(BaseModel):
-    symbol: str = Field(description="The symbol of the asset to trade")
-    qty: int = Field(description="The quantity of the asset to buy or sell")
-    order_side: str = Field(description="The side of the trade (BUY or SELL)")
-    time_in_force: str = Field(description="The duration for which the order is valid")
+    symbol: str = Field(description="The symbol of the asset to trade. It has to end wit /USD. So if a user were to give you BTC, the end result should be: BTC/USD")
+    qty: float = Field(description="The quantity of the asset to buy or sell")
+    side: str = Field(description="The side of the trade (buy or sell)")
+    order_type: str = Field(description="The type of the order (market, limit, stop, stop_limit)")
+    limit_price: Optional[float] = Field(default=None, description="The limit price for limit and stop-limit orders")
+    stop_price: Optional[float] = Field(default=None, description="The stop price for stop and stop-limit orders")
+
+    @validator('side')
+    def validate_side(cls, v):
+        if v.lower() not in ['buy', 'sell']:
+            raise ValueError('Side must be either "buy" or "sell"')
+        return v.lower()
+
+    @validator('order_type')
+    def validate_type(cls, v):
+        if v.lower() not in ['market', 'limit', 'stop', 'stop_limit']:
+            raise ValueError('Type must be one of "market", "limit", "stop", or "stop_limit"')
+        return v.lower()
+
 
 class GetOrderByIdInput(BaseModel):
     order_id: str = Field(description="The ID of the order to fetch")
@@ -117,3 +133,42 @@ class CancelOrderByIdInput(BaseModel):
 class FindArbitrageSushiswapInput(BaseModel):
     token1_address: str = Field(description="The contract address of the first token")
     token2_address: str = Field(description="The contract address of the second token")
+    
+
+class PredictProfitInput(BaseModel):
+    amount_invested: Optional[int] = Field(description="The amount of cash invested. If None, a default of 100 will be used.")
+    cryptocurrency: str = Field(description="The cryptocurrency symbol (e.g., 'BTC' for Bitcoin)")
+
+class BacktestTradingIndicatorsInput(BaseModel):
+    indicator: str = Field(description="The name of the indicator to use (e.g., 'STOCH', 'RSI', 'OBV', 'MSTD', 'MACD', 'MA', 'ATR')")
+    symbol: str = Field(description="The cryptocurrency symbol")
+    start_date: str = Field(description="The start date for the data in YYYY-MM-DD format")
+    end_date: str = Field(description="The end date for the data in YYYY-MM-DD format")
+
+    @validator('indicator', allow_reuse=True)
+    def check_indicator(cls, value):
+        valid_indicators = ['STOCH', 'RSI', 'OBV', 'MSTD', 'MACD', 'MA', 'ATR']
+        if value.upper() not in valid_indicators:
+            raise ValueError(f"Invalid indicator. Must be one of: {', '.join(valid_indicators)}")
+        return value.upper()
+
+    @validator('start_date', 'end_date', allow_reuse=True)
+    def check_date_format(cls, value):
+        try:
+            datetime.strptime(value, '%Y-%m-%d')
+        except ValueError:
+            raise ValueError("Incorrect date format, should be YYYY-MM-DD")
+        return value
+
+class ImageDecoderInput(BaseModel):
+    image_data: str = Field(description="Base64 encoded image data to be decoded")
+    filename: str = Field(default="decoded_image.png", description="Name of the file to save the decoded image as")
+
+class E2BCodeInterpreterInput(BaseModel):
+    code: str = Field(description="Python code to execute.")
+
+class GetAssetsInput(BaseModel):
+    asset_class: Optional[AssetClass] = Field(default=None, description="The asset class to filter by (e.g., AssetClass.US_EQUITY). If None, all assets are returned.")
+
+class IsAssetTradableInput(BaseModel):
+    symbol: str = Field(description="The symbol of the asset to check for tradability")

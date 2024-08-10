@@ -63,6 +63,13 @@ class LLM():
         verbose=True
     )
     
+    gpt4o_mini = ChatOpenAI(
+        model="gpt-4o-mini",
+        temperature=0,
+        api_key=OPENAI_TOKEN,
+        verbose=True
+    )
+    
     groq70b = ChatGroq(
     temperature=0,
     model="llama3-groq-70b-8192-tool-use-preview",
