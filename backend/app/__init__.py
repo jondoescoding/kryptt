@@ -12,9 +12,9 @@ Package Structure:
 - schemas/: Pydantic models for request/response
 - services/: Business logic and services
 
-Project: Kryptt
-Author: Jonathan
-Date: January 2024
+Author: Jon
+Social Media:
+- Twitter: @jondoescoding
 """
 
 __version__ = "1.0.0"
