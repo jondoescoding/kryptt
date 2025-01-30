@@ -13,9 +13,9 @@ def read(filename):
 
 
 setup(
-    name='crypt',
-    version='0.0.1',
-    author='Jonathan White',
+    name='kryptt',
+    version='0.1.0',
+    author='Jon, The Gen AI Developer',
     author_email='jonathan.white.jm@gmail.com',
     description=readme,
     long_description=read('README.md'),
