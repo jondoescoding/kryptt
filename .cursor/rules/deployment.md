@@ -1,0 +1,11 @@
+# Deployment Strategy for Kryptt
+
+This document outlines the deployment strategy for the Kryptt application.
+
+## Hosting
+
+The application will be hosted on Render.
+
+## Deployment Process
+
+Manual deployment will be used initially.  This allows for more control during the initial phases of development.  A CI/CD pipeline will be considered for future automation.

@@ -1,0 +1,17 @@
+# Third-Party Libraries
+
+## **1. Core Dependencies**
+
+| Library/Service | Purpose | Notes |
+| --- | --- | --- |
+| **Alpaca API** | Trading, compliance, withdrawals | Supports Jamaicans. |
+| **Clerk** | User authentication | Simplified signup for everyone |
+| **Groq** | Natural language processing | Free for everyone |
+| **LangChain** | Map LLM commands to Alpaca API | Ensures structured trading logic. |
+| **Paddle** | Donation payments | Separate from Alpaca transactions. |
+
+## **2. Infrastructure**
+
+- **Frontend**: Next.js, TypeScript, Shadcn/Tailwind.
+- **Backend**: Python (Alpaca SDK, LangChain).
+- **Database**: Supabase (user preferences, logs).

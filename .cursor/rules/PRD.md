@@ -1,0 +1,65 @@
+# Product Requirements Document (PRD)
+
+## **1. App Overview**
+
+ **Name** : Kryptt
+
+ **Vision** : Democratize global trading for Jamaicans via Alpaca’s infrastructure, enhanced with natural language automation.
+
+ **Problem** :
+
+* Jamaicans lack access to intuitive, low-cost platforms for global markets.
+* Manual trading interfaces are overwhelming for casual investors.
+
+## **2. Target Audience**
+
+* **Primary Users** : Jamaican residents aged 25–35 earning  **<$12k USD/year** .
+* **Key Needs** :
+* Effortless, automated trading without technical expertise.
+* Affordable access to crypto/stocks with local banking support.
+
+## **3. MVP Scope (10 Days)**
+
+### Core Features
+
+1. **Alpaca Account Integration** :
+
+* Users sign up via Clerk, then complete Alpaca’s Jamaican-friendly KYC.
+* Alpaca handles licensing, SWIFT withdrawals, and compliance for Jamaican users.
+
+1. **Natural Language Trading** :
+
+* Basic LLM commands (e.g., “Buy $50 AAPL”) via Groq.
+* LangChain translates commands to Alpaca API calls.
+
+1. **Portfolio Dashboard** :
+
+* View Alpaca account balance and transaction history.
+
+1. **Donation System** :
+
+* Paddle integration for accepting platform donations (separate from trading funds).
+
+### Post-MVP (Roadmap)
+
+* Recurring orders (e.g., “Buy every Monday”) in v1.5.
+* Automated trading bots (v2).
+
+## **4. Technical Risks**
+
+1. **LLM Misinterpretation** :
+
+* Groq’s model may misprocess complex commands.
+
+1. **Aggressive Timeline** :
+
+* 10 days leaves minimal room for error.
+
+## **5. Timeline**
+
+| Day Range | Focus                        |
+| --------- | ---------------------------- |
+| 1–2      | Clerk auth + + Alpaca API    |
+| 3–5      | LLM command parsing          |
+| 6–8      | Dashboard + Paddle donations |
+| 9–10     | Testing & Alpaca readiness   |
