@@ -1,6 +1,9 @@
 Rules:
 - I AM DEVELOPING IN WINDOWS 10
-- I AM USING PYTHON 3.11
+- I AM USING PYTHON 3.11 for the backend
+- I AM USING NEXTJS for the frontend
+- I AM USING FASTAPI for the backend
+- I AM USING INFISICAL for the secrets management
 - Write to report.md in docs\SOP\changes.md on what was changed and how it was done on major changes to the codebase. 
 - Write to tasks.md in docs\SOP\tasks.md on what tasks need to be done once I declare the work is done for the day.
 
@@ -28,3 +31,15 @@ Tasks:
 - [ ] [Task Description]
 ```
 
+Code Formatting:
+- Within the multi-line code blocks, use the following format for the code:
+
+```python
+"""
+Project: Kryptt
+Author: Jon
+Social Media:
+- Twitter: @jondoescoding
+Date: January 2024
+"""
+```
