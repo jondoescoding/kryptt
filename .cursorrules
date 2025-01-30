@@ -1,4 +1,30 @@
 Rules:
 - I AM DEVELOPING IN WINDOWS 10
 - I AM USING PYTHON 3.11
+- Write to report.md in docs\SOP\changes.md on what was changed and how it was done on major changes to the codebase. 
+- Write to tasks.md in docs\SOP\tasks.md on what tasks need to be done once I declare the work is done for the day.
+
+Report Writing:
+- Use github markdown formatting. 
+- Keep it concise and to the point.
+- Use the following format for the report:
+
+```markdown
+## [Date] - [Change]
+
+[Description of the change]
+```
+- If the change is a new feature, include a description of the feature and how it was implemented.
+- If the change is a bug fix, include a description of the bug and how it was fixed.
+- If the change is a refactoring, include a description of the refactoring and how it was done.
+- If the change is a documentation update, include a description of the documentation update and how it was done.
+
+Tasks:
+- Use github markdown formatting. 
+- Keep it concise and to the point.
+- Use the following format for the tasks:
+
+```markdown
+- [ ] [Task Description]
+```
 
