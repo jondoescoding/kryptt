@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { ThemeToggle } from "../ui/theme-toggle"
 
 export function Footer() {
   return (
@@ -53,12 +52,6 @@ export function Footer() {
               <h4 className="font-medium tracking-tight">Location</h4>
               <p className="text-sm text-muted-foreground">Bowtied Island</p>
             </div>
-          </div>
-
-          {/* Theme Toggle */}
-          <div className="space-y-4">
-            <h4 className="font-medium tracking-tight">Theme</h4>
-            <ThemeToggle />
           </div>
         </div>
       </div>
