@@ -70,7 +70,6 @@ export default function Home() {
                   </p>
                 </div>
                 <Button 
-                  size="lg"
                   className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium text-lg px-8 py-6 h-auto transition-all"
                   asChild
                 >
