@@ -1,10 +1,14 @@
+---
+description: what is the backend of the app
+globs: 
+---
 # Backend Documentation
 
 ## **1. Tech Stack**
 
 | Category                    | Choice                | Reasoning                                                                                       |
 | --------------------------- | --------------------- | ----------------------------------------------------------------------------------------------- |
-| **Backend Framework** | Python + FastAPI      | Async-ready, lightweight, and aligns with[Alpaca.py/LangChain](http://alpaca.py/LangChain)tooling. |
+| **Backend Framework** | Python + FastAPI      | Async-ready, lightweight, and aligns with[Alpaca.py/LangChain](mdc:http:/alpaca.py/LangChain)tooling. |
 | **Database**          | PostgreSQL (Supabase) | Relational structure for trades/user data; integrates with Clerk auth.                          |
 | **Authentication**    | Clerk (JWT tokens)    | Session management handled by Clerk; backend validates tokens.                                  |
 | **API Design**        | RESTful               | Simpler to implement for MVP vs. GraphQL; aligns with Alpaca’s APIs.                           |

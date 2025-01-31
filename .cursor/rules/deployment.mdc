@@ -1,3 +1,7 @@
+---
+description: How the app should be deployed
+globs: 
+---
 # Deployment Strategy for Kryptt
 
 This document outlines the deployment strategy for the Kryptt application.
