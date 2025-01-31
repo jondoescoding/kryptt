@@ -1,3 +1,7 @@
+# Old Files
+kryptt/
+.specstory
+
 # Byte-compiled / optimized / DLL files
 notes.md
 __pycache__/
@@ -164,4 +168,48 @@ cython_debug/
 #.idea/
 
 .history
+
+# Environment variables
 .env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
