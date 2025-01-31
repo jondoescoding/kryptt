@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { IconBuildingBank, IconRobot, IconChartBar, IconCreditCard } from "@tabler/icons-react";
+import { motion } from "framer-motion";
 
 export function Hero() {
   const features = [
@@ -30,61 +31,133 @@ export function Hero() {
     },
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const imageVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.7,
+        ease: [0.6, -0.05, 0.01, 0.99],
+      },
+    },
+  };
+
   return (
     <>
       <div className="relative bg-black pt-24 pb-16 lg:pt-32 lg:pb-24">
-        {/* Background gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black to-black/90" />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="absolute inset-0 bg-gradient-to-b from-black/50 via-black to-black/90"
+        />
         
         <div className="container relative mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            {/* Left Column - Content */}
-            <div className="flex flex-col space-y-8">
-              {/* Main headline */}
-              <h1 className="font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white">
-                <span className="text-yellow-400">Finally</span>, a trading app that{" "}
-                <span className="text-yellow-400">just works</span>.
-              </h1>
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex flex-col space-y-8"
+            >
+              <motion.h1 variants={itemVariants} className="font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white">
+                <motion.span
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.5 }}
+                  className="text-yellow-400"
+                >
+                  Finally
+                </motion.span>
+                , a trading app that{" "}
+                <motion.span
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7, duration: 0.5 }}
+                  className="text-yellow-400"
+                >
+                  just works
+                </motion.span>
+                .
+              </motion.h1>
 
-              {/* Subheadline */}
-              <h2 className="font-medium text-xl sm:text-2xl lg:text-3xl text-white/80 max-w-xl">
+              <motion.h2 variants={itemVariants} className="font-medium text-xl sm:text-2xl lg:text-3xl text-white/80 max-w-xl">
                 Simplify your access to global markets without the confusion.
-              </h2>
+              </motion.h2>
 
-              {/* Body text */}
-              <p className="font-normal text-lg text-white/70 max-w-xl leading-relaxed">
+              <motion.p variants={itemVariants} className="font-normal text-lg text-white/70 max-w-xl leading-relaxed">
                 Most trading apps are a confusing mess of charts and jargon that leave you feeling lost.
                 <br /><br />
                 We&apos;ve stripped away the complexity and built something different—
                 <span className="font-medium text-yellow-400">something Jamaicans actually need</span>.
-              </p>
+              </motion.p>
 
-              {/* CTA buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Button 
-                  size="lg" 
-                  className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium text-lg px-8 py-6 h-auto transition-all"
-                  asChild
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-col sm:flex-row gap-4 pt-4"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <Link href="/dashboard">
-                    Get Started Now <MoveRight className="w-5 h-5 ml-2" />
-                  </Link>
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-white/20 hover:bg-white/10 text-white font-medium text-lg px-8 py-6 h-auto transition-all"
-                  asChild
+                  <Button 
+                    size="lg" 
+                    className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium text-lg px-8 py-6 h-auto transition-all"
+                    asChild
+                  >
+                    <Link href="/dashboard">
+                      Get Started Now <MoveRight className="w-5 h-5 ml-2" />
+                    </Link>
+                  </Button>
+                </motion.div>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <Link href="/contact">
-                    Learn More
-                  </Link>
-                </Button>
-              </div>
-            </div>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="border-white/20 hover:bg-white/10 text-white font-medium text-lg px-8 py-6 h-auto transition-all"
+                    asChild
+                  >
+                    <Link href="/contact">
+                      Learn More
+                    </Link>
+                  </Button>
+                </motion.div>
+              </motion.div>
+            </motion.div>
 
-            {/* Right Column - Image */}
-            <div className="relative aspect-[4/3] rounded-xl overflow-hidden">
+            <motion.div
+              variants={imageVariants}
+              initial="hidden"
+              animate="visible"
+              className="relative aspect-[4/3] rounded-xl overflow-hidden"
+            >
               <Image
                 src="/images/hero/trading-interface-showcase.jpg"
                 alt="Trading interface showcase"
@@ -92,37 +165,63 @@ export function Hero() {
                 className="object-cover"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            </div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+                className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"
+              />
+            </motion.div>
           </div>
         </div>
       </div>
 
-      {/* Features Section */}
       <div className="bg-black">
         <div className="container mx-auto px-4">
-          {/* Features Title */}
-          <div className="mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="mb-12"
+          >
             <h2 className="text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-white">Why Choose Kryptt?</h2>
-            <p className="text-lg font-normal text-white/70 max-w-2xl leading-relaxed">Experience the future of trading with features designed specifically for Jamaican investors.</p>
-          </div>
+            <p className="text-lg font-normal text-white/70 max-w-2xl leading-relaxed">
+              Experience the future of trading with features designed specifically for Jamaican investors.
+            </p>
+          </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-16">
             {features.map((feature, index) => (
-              <div
+              <motion.div
                 key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                whileHover={{ y: -5 }}
                 className="group relative p-8 border border-white/10 rounded-lg hover:border-yellow-400/50 transition-all duration-300"
               >
-                <div className="mb-6 text-yellow-400">
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 + 0.2, duration: 0.5 }}
+                  className="mb-6 text-yellow-400"
+                >
                   {feature.icon}
-                </div>
+                </motion.div>
                 <h3 className="text-xl font-medium mb-3 text-white group-hover:text-yellow-400 transition-colors">
                   {feature.title}
                 </h3>
                 <p className="text-base font-normal text-white/70 leading-relaxed">
                   {feature.description}
                 </p>
-                <div className="absolute left-0 top-0 h-full w-1 bg-yellow-400/0 group-hover:bg-yellow-400 transition-all duration-300 rounded-tl-lg rounded-bl-lg" />
-              </div>
+                <motion.div
+                  initial={{ height: 0 }}
+                  whileHover={{ height: "100%" }}
+                  className="absolute left-0 top-0 w-1 bg-yellow-400 transition-all duration-300 rounded-tl-lg rounded-bl-lg"
+                />
+              </motion.div>
             ))}
           </div>
         </div>
