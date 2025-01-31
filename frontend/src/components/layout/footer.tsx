@@ -4,7 +4,7 @@ import { ThemeToggle } from "../ui/theme-toggle"
 export function Footer() {
   return (
     <footer className="border-t font-[family-name:var(--font-roc-grotesk)]">
-      <div className="container flex flex-col gap-8 py-8 md:py-12">
+      <div className="container flex flex-col gap-8 py-8 px-4 md:py-12">
         <div className="flex flex-col md:flex-row justify-between gap-8">
           <div className="space-y-4">
             <h3 className="text-xl font-bold tracking-tight">nightshade-ai</h3>
@@ -61,9 +61,11 @@ export function Footer() {
             <ThemeToggle />
           </div>
         </div>
-
-        <div className="border-t pt-8">
-          <p className="text-sm text-muted-foreground text-center">
+      </div>
+      
+      <div className="border-t w-full">
+        <div className="max-w-screen-2xl mx-auto px-4">
+          <p className="text-sm text-muted-foreground text-center py-8">
             © {new Date().getFullYear()} nightshade-ai. All rights reserved.
           </p>
         </div>
