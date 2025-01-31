@@ -1,6 +1,6 @@
 "use client";
 
-import { MoveRight } from "lucide-react";
+import { MoveRight, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
@@ -141,11 +141,11 @@ export function Hero() {
                   <Button 
                     size="lg" 
                     variant="outline" 
-                    className="border-white/20 hover:bg-white/10 text-white font-medium text-lg px-8 py-6 h-auto transition-all"
+                    className="bg-black hover:bg-white hover:text-black text-white font-medium text-lg px-8 py-6 h-auto transition-all"
                     asChild
                   >
-                    <Link href="/contact">
-                      Learn More
+                    <Link href="https://twitter.com/messages/compose?recipient_id=jondoescoding&text=Hey%20Jon%20%F0%9F%91%8B" target="_blank" rel="noopener noreferrer">
+                      Contact Dev <MessageCircle className="w-5 h-5 ml-2 inline-block" />
                     </Link>
                   </Button>
                 </motion.div>

@@ -1,51 +1,26 @@
 import type { Metadata } from "next";
-import { Providers } from "@/components/providers";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "./providers/AuthProvider";
 
-const rocGrotesk = localFont({
-  src: [
-    {
-      path: './fonts/roc_grotesk/Fontspring-DEMO-rocgrotesk-regular.otf',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: './fonts/roc_grotesk/Fontspring-DEMO-rocgrotesk-medium.otf',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: './fonts/roc_grotesk/Fontspring-DEMO-rocgrotesk-bold.otf',
-      weight: '700',
-      style: 'normal',
-    },
-  ],
-  variable: '--font-roc-grotesk',
-  display: 'swap',
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Kryptt",
-  description: "Building the future of AI, one line at a time.",
+  description: "Trade stocks with simple commands",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${rocGrotesk.variable} font-roc antialiased`}>
-        <Providers
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+    <html lang="en">
+      <body className={inter.className}>
+        <AuthProvider>
           {children}
-        </Providers>
+        </AuthProvider>
       </body>
     </html>
   );
