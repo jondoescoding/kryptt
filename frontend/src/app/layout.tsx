@@ -37,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${rocGrotesk.variable} font-sans antialiased`}>
+      <body className={`${rocGrotesk.variable} font-roc antialiased`}>
         <Providers
           attribute="class"
           defaultTheme="system"

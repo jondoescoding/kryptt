@@ -9,6 +9,29 @@ export default {
   ],
   theme: {
   	extend: {
+  		fontFamily: {
+  			roc: ["var(--font-roc-grotesk)"],
+  		},
+  		fontSize: {
+  			// Modern scale for better readability
+  			"2xs": ["0.75rem", { lineHeight: "1.25rem" }],
+  			xs: ["0.813rem", { lineHeight: "1.5rem" }],
+  			sm: ["0.875rem", { lineHeight: "1.5rem" }],
+  			base: ["1rem", { lineHeight: "1.75rem" }],
+  			lg: ["1.125rem", { lineHeight: "1.75rem" }],
+  			xl: ["1.25rem", { lineHeight: "2rem" }],
+  			"2xl": ["1.5rem", { lineHeight: "2rem" }],
+  			"3xl": ["1.875rem", { lineHeight: "2.25rem" }],
+  			"4xl": ["2.25rem", { lineHeight: "2.75rem" }],
+  			"5xl": ["3rem", { lineHeight: "3.5rem" }],
+  			"6xl": ["3.75rem", { lineHeight: "4rem" }],
+  		},
+  		fontWeight: {
+  			light: "300",
+  			normal: "400",
+  			middle: "500",
+  			bold: "700",
+  		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
@@ -55,7 +78,21 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+  		keyframes: {
+  			"accordion-down": {
+  				from: { height: "0" },
+  				to: { height: "var(--radix-accordion-content-height)" },
+  			},
+  			"accordion-up": {
+  				from: { height: "var(--radix-accordion-content-height)" },
+  				to: { height: "0" },
+  			},
+  		},
+  		animation: {
+  			"accordion-down": "accordion-down 0.2s ease-out",
+  			"accordion-up": "accordion-up 0.2s ease-out",
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
