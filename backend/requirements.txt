@@ -7,3 +7,6 @@ requests~=2.32.3
 boto3~=1.35.0
 botocore~=1.35.0
 python-json-logger==2.0.7  # For structured JSON logging
+alpaca-py
+langchain
+langchain-community
