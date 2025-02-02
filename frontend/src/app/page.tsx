@@ -3,7 +3,6 @@ import { Hero } from "@/components/ui/hero";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { MoveRight } from "lucide-react";
-import Link from "next/link";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
 const faqItems = [
