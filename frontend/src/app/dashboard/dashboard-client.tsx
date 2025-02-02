@@ -8,22 +8,22 @@ const sidebarLinks = [
   {
     label: "Home",
     href: "/dashboard",
-    icon: <Home className="w-5 h-5 text-neutral-700" />,
+    icon: <Home className="w-5 h-5 text-white/70" />,
   },
   {
     label: "Chat",
     href: "/dashboard/chat",
-    icon: <MessageSquare className="w-5 h-5 text-neutral-700" />,
+    icon: <MessageSquare className="w-5 h-5 text-white/70" />,
   },
   {
     label: "Profile",
     href: "/dashboard/profile",
-    icon: <User className="w-5 h-5 text-neutral-700" />,
+    icon: <User className="w-5 h-5 text-white/70" />,
   },
   {
     label: "Settings",
     href: "/dashboard/settings",
-    icon: <Settings className="w-5 h-5 text-neutral-700" />,
+    icon: <Settings className="w-5 h-5 text-white/70" />,
   },
 ];
 
@@ -31,7 +31,7 @@ export function DashboardClient({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-black">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
         <SidebarBody>
           <div className="flex flex-col gap-4">
