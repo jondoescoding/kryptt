@@ -70,7 +70,6 @@ class Settings(BaseSettings):
     
     # Security (fetched from Infisical)
     SECRET_KEY: Optional[str] = None
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # Database (fetched from Infisical)
     DATABASE_URL: Optional[str] = None
@@ -80,8 +79,7 @@ class Settings(BaseSettings):
         try:
             infisical = InfisicalConfig()
             # Fetch secrets from Infisical
-            self.SECRET_KEY = infisical.get_secret("SECRET_KEY") or "your-secret-key-here"
-            self.DATABASE_URL = infisical.get_secret("DATABASE_URL") or "sqlite:///./kryptt.db"
+            self.SECRET_KEY = infisical.get_secret("SECRET_KEY")
         except Exception as e:
             print(f"Warning: Failed to load secrets from Infisical: {str(e)}")
     

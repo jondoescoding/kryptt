@@ -22,7 +22,6 @@ import time
 from typing import Callable
 from fastapi import FastAPI, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.types import Message
 from ..config import Settings
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
