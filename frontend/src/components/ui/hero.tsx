@@ -2,6 +2,7 @@
 
 import { MoveRight, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SignInButton } from "@/components/ui/sign-in";
 import Image from "next/image";
 import Link from "next/link";
 import { IconBuildingBank, IconRobot, IconChartBar, IconCreditCard } from "@tabler/icons-react";
@@ -124,15 +125,11 @@ export function Hero() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Button 
-                    size="lg" 
+                  <SignInButton 
                     className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium text-lg px-8 py-6 h-auto transition-all"
-                    asChild
                   >
-                    <Link href="/dashboard">
-                      Get Started Now <MoveRight className="w-5 h-5 ml-2" />
-                    </Link>
-                  </Button>
+                    Get Started Now <MoveRight className="w-5 h-5 ml-2" />
+                  </SignInButton>
                 </motion.div>
                 <motion.div
                   whileHover={{ scale: 1.05 }}
