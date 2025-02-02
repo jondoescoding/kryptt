@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import Link, { LinkProps } from "next/link";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Links {
   label: string;
@@ -86,20 +86,40 @@ export const DesktopSidebar = ({
   ...props
 }: React.ComponentProps<typeof motion.div>) => {
   const { open, setOpen, animate } = useSidebar();
+
+  // Load initial state from localStorage
+  React.useEffect(() => {
+    const savedState = localStorage.getItem('sidebarOpen');
+    if (savedState !== null) {
+      setOpen(JSON.parse(savedState));
+    }
+  }, [setOpen]);
+
+  // Save state changes to localStorage
+  React.useEffect(() => {
+    localStorage.setItem('sidebarOpen', JSON.stringify(open));
+  }, [open]);
+
   return (
     <motion.div
       className={cn(
-        "h-full px-4 py-4 hidden md:flex md:flex-col bg-neutral-100 w-[300px] flex-shrink-0",
+        "h-full px-4 py-4 hidden md:flex md:flex-col bg-neutral-100 w-[300px] flex-shrink-0 relative",
         className
       )}
       animate={{
         width: animate ? (open ? "300px" : "60px") : "300px",
       }}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
       {...props}
     >
       {children}
+      <motion.button
+        onClick={() => setOpen(!open)}
+        className="absolute -right-3 top-6 bg-neutral-100 rounded-full p-1.5 border border-neutral-200"
+        animate={{ rotate: open ? 0 : 180 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
+        <ChevronLeft className="w-4 h-4 text-neutral-700" />
+      </motion.button>
     </motion.div>
   );
 };

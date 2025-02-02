@@ -1,5 +1,6 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
+import { DashboardClient } from "./dashboard-client";
 
 export default async function DashboardLayout({
   children,
@@ -12,5 +13,5 @@ export default async function DashboardLayout({
     redirect("/");
   }
 
-  return <>{children}</>;
+  return <DashboardClient>{children}</DashboardClient>;
 } 
