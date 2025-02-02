@@ -2,6 +2,10 @@
 description: What is this app
 globs: 
 ---
+---
+description: What is this app
+globs: 
+---
 # Product Requirements Document (PRD)
 
 ## **1. App Overview**
@@ -28,7 +32,7 @@ globs:
 
 1. **Alpaca Account Integration** :
 
-* Users sign up via Clerk, then complete Alpaca’s Jamaican-friendly KYC.
+* Users sign up via Kinde, then complete Alpaca’s Jamaican-friendly KYC.
 * Alpaca handles licensing, SWIFT withdrawals, and compliance for Jamaican users.
 
 1. **Natural Language Trading** :
@@ -63,7 +67,7 @@ globs:
 
 | Day Range | Focus                        |
 | --------- | ---------------------------- |
-| 1–2      | Clerk auth + + Alpaca API    |
+| 1–2      | Kinde auth + + Alpaca API    |
 | 3–5      | LLM command parsing          |
 | 6–8      | Dashboard + Paddle donations |
 | 9–10     | Testing & Alpaca readiness   |

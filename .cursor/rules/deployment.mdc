@@ -1,4 +1,8 @@
 ---
+description: How the web application will be deployed
+globs: 
+---
+---
 description: How the app should be deployed
 globs: 
 ---
