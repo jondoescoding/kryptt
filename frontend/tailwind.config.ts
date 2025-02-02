@@ -10,7 +10,7 @@ export default {
   theme: {
   	extend: {
   		fontFamily: {
-  			roc: ["var(--font-roc-grotesk)"],
+  			sans: ["var(--font-space-grotesk)", "system-ui", "sans-serif"],
   		},
   		fontSize: {
   			// Modern scale for better readability
@@ -25,6 +25,9 @@ export default {
   			"4xl": ["2.25rem", { lineHeight: "2.75rem" }],
   			"5xl": ["3rem", { lineHeight: "3.5rem" }],
   			"6xl": ["3.75rem", { lineHeight: "4rem" }],
+  			h1: ["2.5rem", { lineHeight: "1.2" }],
+  			h2: ["2rem", { lineHeight: "1.3", letterSpacing: "0.5px" }],
+  			h3: ["1.75rem", { lineHeight: "1.4" }],
   		},
   		fontWeight: {
   			light: "300",

@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./providers/AuthProvider";
-
-const inter = Inter({ subsets: ["latin"] });
+import { spaceGrotesk } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Kryptt",
@@ -17,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${spaceGrotesk.variable} font-sans`}>
         <AuthProvider>
           {children}
         </AuthProvider>
