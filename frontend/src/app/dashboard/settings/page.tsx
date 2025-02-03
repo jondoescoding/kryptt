@@ -41,6 +41,33 @@ export default function SettingsPage() {
     message: string;
   }>({ type: "", message: "" });
 
+  const fetchStoredKeys = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/v1/settings/keys");
+      const data = await response.json();
+      
+      if (!data.message) {
+        setKeys({
+          groq: data.groq || "",
+          alpacaApiKey: data.alpaca_api_key || "",
+          alpacaSecretKey: data.alpaca_secret_key || "",
+          alpacaEndpoint: data.alpaca_endpoint || "https://paper-api.alpaca.markets/v2",
+        });
+      }
+    } catch (error) {
+      setStatus({ 
+        type: "error", 
+        message: "Failed to fetch stored keys" 
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchStoredKeys();
+    }
+  }, [user]);
+
   const handleKeyChange = (keyType: string, value: string) => {
     setKeys((prev) => ({ ...prev, [keyType]: value }));
     
@@ -70,14 +97,17 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      const token = await getToken();
       const response = await fetch("http://localhost:8000/api/v1/settings/keys", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify(keys),
+        body: JSON.stringify({
+          groq: keys.groq,
+          alpaca_api_key: keys.alpacaApiKey,
+          alpaca_secret_key: keys.alpacaSecretKey,
+          alpaca_endpoint: keys.alpacaEndpoint,
+        }),
       });
 
       const data = await response.json();

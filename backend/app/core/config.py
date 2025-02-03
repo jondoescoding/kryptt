@@ -24,6 +24,7 @@ Social Media:
 """
 
 import os
+import logging
 from typing import Optional
 from pydantic_settings import BaseSettings
 from functools import lru_cache
@@ -37,7 +38,9 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Kryptt API"
     DEBUG: bool = False
     
-
+    # Logging Settings
+    LOG_LEVEL: str = "INFO"
+    LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     
     class Config:
         """Pydantic config for environment variable loading."""
@@ -48,3 +51,10 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Create cached instance of settings."""
     return Settings()
+
+def setup_logging(settings: Settings) -> None:
+    """Configure logging with the specified settings."""
+    logging.basicConfig(
+        level=getattr(logging, settings.LOG_LEVEL),
+        format=settings.LOG_FORMAT
+    )
