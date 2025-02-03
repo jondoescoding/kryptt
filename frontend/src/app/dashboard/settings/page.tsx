@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 const validateGroqKey = (key: string) => {
   return /^gsk_[A-Za-z0-9]{48}$/.test(key);
@@ -19,7 +21,8 @@ const validateAlpacaSecret = (key: string) => {
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { user, isLoading } = useKindeBrowserClient();
+  const { user, isLoading: isAuthLoading, getToken } = useKindeBrowserClient();
+  const [isLoading, setIsLoading] = useState(false);
   const [keys, setKeys] = useState({
     groq: "",
     alpacaApiKey: "",
@@ -33,14 +36,10 @@ export default function SettingsPage() {
     alpacaSecretKey: "",
   });
 
-  if (isLoading) {
-    return null;
-  }
-
-  if (!user) {
-    router.push("/");
-    return null;
-  }
+  const [status, setStatus] = useState<{
+    type: "success" | "error" | "";
+    message: string;
+  }>({ type: "", message: "" });
 
   const handleKeyChange = (keyType: string, value: string) => {
     setKeys((prev) => ({ ...prev, [keyType]: value }));
@@ -68,9 +67,62 @@ export default function SettingsPage() {
     }
   };
 
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      const token = await getToken();
+      const response = await fetch("http://localhost:8000/api/v1/settings/keys", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(keys),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setStatus({ type: "success", message: "API keys saved successfully" });
+      } else {
+        setStatus({ 
+          type: "error", 
+          message: data.error || "Failed to save API keys" 
+        });
+      }
+    } catch (error) {
+      setStatus({ 
+        type: "error", 
+        message: "Unable to connect to the server" 
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isAuthLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-yellow-500" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    router.push("/");
+    return null;
+  }
+
   return (
     <div className="container mx-auto p-6 space-y-8">
       <h1 className="text-3xl font-bold text-white mb-8">API Settings</h1>
+
+      {status.message && (
+        <div className={`p-4 rounded-lg mb-4 ${
+          status.type === "success" ? "bg-green-500/20 text-green-200" : "bg-red-500/20 text-red-200"
+        }`}>
+          {status.message}
+        </div>
+      )}
 
       {/* LLM Section */}
       <div className="bg-black/50 p-6 rounded-lg border border-yellow-500/20">
@@ -86,6 +138,7 @@ export default function SettingsPage() {
               value={keys.groq}
               onChange={(e) => handleKeyChange("groq", e.target.value)}
               className={`bg-black/30 border-yellow-500/30 text-white ${errors.groq ? "border-red-500" : ""}`}
+              disabled={isLoading}
             />
             {errors.groq && (
               <p className="mt-1 text-sm text-red-500">{errors.groq}</p>
@@ -108,6 +161,7 @@ export default function SettingsPage() {
               value={keys.alpacaApiKey}
               onChange={(e) => handleKeyChange("alpacaApiKey", e.target.value)}
               className={`bg-black/30 border-yellow-500/30 text-white ${errors.alpacaApiKey ? "border-red-500" : ""}`}
+              disabled={isLoading}
             />
             {errors.alpacaApiKey && (
               <p className="mt-1 text-sm text-red-500">{errors.alpacaApiKey}</p>
@@ -123,6 +177,7 @@ export default function SettingsPage() {
               value={keys.alpacaSecretKey}
               onChange={(e) => handleKeyChange("alpacaSecretKey", e.target.value)}
               className={`bg-black/30 border-yellow-500/30 text-white ${errors.alpacaSecretKey ? "border-red-500" : ""}`}
+              disabled={isLoading}
             />
             {errors.alpacaSecretKey && (
               <p className="mt-1 text-sm text-red-500">{errors.alpacaSecretKey}</p>
@@ -137,9 +192,23 @@ export default function SettingsPage() {
               value={keys.alpacaEndpoint}
               onChange={(e) => handleKeyChange("alpacaEndpoint", e.target.value)}
               className="bg-black/30 border-yellow-500/30 text-white"
+              disabled={isLoading}
             />
           </div>
         </div>
+      </div>
+
+      <div className="flex gap-4 mt-8">
+        <Button 
+          onClick={handleSave}
+          className="bg-yellow-500 hover:bg-yellow-600 text-black"
+          disabled={Object.values(errors).some(error => error !== "") || isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          ) : null}
+          Save Keys
+        </Button>
       </div>
     </div>
   );
