@@ -20,7 +20,9 @@ Social Media:
 import os
 from fastapi import FastAPI
 from .core.config import get_settings
-from .core.middleware import setup_cors, setup_logging, RequestLoggingMiddleware
+from .core.cors import setup_cors
+from .core.logging import setup_logging, RequestLoggingMiddleware
+from .api.v1 import router as api_v1_router
 
 # Create FastAPI application
 app = FastAPI(
@@ -41,10 +43,11 @@ setup_cors(app, settings)
 # Add request logging middleware
 app.add_middleware(RequestLoggingMiddleware)
 
+# Register API routers
+app.include_router(api_v1_router, prefix="/api")
+
 # Create logs directory if it doesn't exist
 os.makedirs("logs", exist_ok=True)
-
-
 
 @app.get("/")
 async def root():
