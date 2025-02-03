@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 const validateGroqKey = (key: string) => {
-  return /^gsk_[A-Za-z0-9]{48}$/.test(key);
+  return key.startsWith('gsk_');
 };
 
 const validateAlpacaKey = (key: string) => {
@@ -49,7 +49,7 @@ export default function SettingsPage() {
       case "groq":
         setErrors(prev => ({
           ...prev,
-          groq: validateGroqKey(value) ? "" : "Invalid Groq key format. Should start with 'gsk_' followed by 48 characters"
+          groq: validateGroqKey(value) ? "" : "Invalid Groq key format. Should start with 'gsk_'"
         }));
         break;
       case "alpacaApiKey":
@@ -75,7 +75,7 @@ export default function SettingsPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(keys),
       });
