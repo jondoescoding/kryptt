@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-import logging
+from app.core.logging import mask_sensitive_data, logging
 from .models.settings import APIKeys
 
 router = APIRouter(prefix="/settings", tags=["settings"])
@@ -19,19 +19,20 @@ async def save_api_keys(keys: APIKeys):
         # Store keys in memory
         api_keys_store["current"] = keys.model_dump()
         
-        # Log masked versions of the keys
-        logging.info(
-            "API keys saved: %s",
-            {
-                "groq": f"gsk_...{keys.groq[-4:] if keys.groq else ''}",
-                "alpaca_api_key": mask_key(keys.alpaca_api_key),
-                "alpaca_secret_key": mask_key(keys.alpaca_secret_key),
-                "alpaca_endpoint": keys.alpaca_endpoint
-            }
+        # Log masked versions of the keys using enhanced logging
+        masked_data = mask_sensitive_data({
+            "groq": keys.groq,
+            "alpaca_api_key": keys.alpaca_api_key,
+            "alpaca_secret_key": keys.alpaca_secret_key,
+            "alpaca_endpoint": keys.alpaca_endpoint
+        })
+        
+        logging.info_with_emoji(
+            f"API Keys Saved Successfully | Data: {masked_data}"
         )
         return {"message": "API keys saved successfully"}
     except Exception as e:
-        logging.error(f"Failed to save API keys: {str(e)}")
+        logging.error_with_emoji(f"Failed to save API keys: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail=str(e)
@@ -41,10 +42,14 @@ async def save_api_keys(keys: APIKeys):
 async def get_api_keys():
     try:
         if "current" not in api_keys_store:
+            logging.warning_with_emoji("No API keys found in storage")
             return {"message": "No API keys found"}
+            
+        masked_keys = mask_sensitive_data(api_keys_store["current"])
+        logging.info_with_emoji(f"API Keys Retrieved | Data: {masked_keys}")
         return api_keys_store["current"]
     except Exception as e:
-        logging.error(f"Failed to retrieve API keys: {str(e)}")
+        logging.error_with_emoji(f"Failed to retrieve API keys: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail=str(e)
