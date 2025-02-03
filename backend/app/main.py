@@ -19,7 +19,6 @@ Social Media:
 
 import os
 from fastapi import FastAPI
-from .api.v1 import router as v1_router
 from .core.config import get_settings
 from .core.middleware import setup_cors, setup_logging, RequestLoggingMiddleware
 
@@ -45,8 +44,7 @@ app.add_middleware(RequestLoggingMiddleware)
 # Create logs directory if it doesn't exist
 os.makedirs("logs", exist_ok=True)
 
-# Include routers
-app.include_router(v1_router)
+
 
 @app.get("/")
 async def root():
