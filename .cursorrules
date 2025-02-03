@@ -1,9 +1,6 @@
 - I AM DEVELOPING ON WINDOWS 10
-- I AM USING PYTHON 3.11 for the backend
-- I AM USING NEXTJS
-- I AM USING FASTAPI
-- I AM USING INFISICAL for the secrets management
-
+- I AM USING PYTHON 3.11 (FASTAPI) for the backend
+- I AM USING NEXTJS + TAILWINDCSS + REACT + SHADCN
 
 Code Formatting:
 - Within the multi-line code blocks, use the following format for the code:
