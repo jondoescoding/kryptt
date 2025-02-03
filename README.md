@@ -31,11 +31,18 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
+## # Starting the server
 
-## Core Tech Stack ⚙️  
-`Alpaca API` · `Clerk Auth` · `Groq LPU` · `LangChain` · `FastAPI`  
+```python-repl
+uvicorn app.main:app --reload --port 8000
+```
 
-## Roadmap 🗺️  
+## Core Tech Stack ⚙️
+
+`Alpaca API` · `Clerk Auth` · `Groq LPU` · `LangChain` · `FastAPI`
+
+## Roadmap 🗺️
+
 - [ ] Recurring orders ("Buy every Monday")
 - [ ] JMD-denominated portfolio view
 - [ ] WhatsApp trading integration
@@ -43,6 +50,5 @@ cp .env.example .env
 - [ ] Trading based on news events (e.g. "Sell $50 NVIDIA if the article is negative")
 - [ ] Trading based on social media (e.g. "Buy $50 DOGE when ELON tweets")
 - [ ] Trading based on technical analysis (e.g. "Buy $50 AAPL if the RSI is below 30")
-
 
 _Licensed under [GPLv3](LICENSE)_ • [Report Issue](https://github.com/jondoescoding/crypt/issues)
