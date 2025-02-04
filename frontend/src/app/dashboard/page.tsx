@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { motion } from "framer-motion";
 
 // Types for our account data
 interface AccountData {
@@ -90,6 +91,31 @@ export default function DashboardPage() {
     fetchAccountData();
   }, []);
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    show: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+
   // If there's an error, show it at the top
   if (error) {
     return (
@@ -127,93 +153,108 @@ export default function DashboardPage() {
       </div>
 
       {/* Main metrics grid */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <motion.div 
+        className="grid gap-6 md:grid-cols-2"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
         {/* Total Equity */}
-        <Card className="col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Equity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-16 w-48 mx-auto" />
-            ) : (
-              <div className="text-4xl font-bold text-center py-4">
-                ${accountData ? parseFloat(accountData.equity).toLocaleString() : '0'}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <motion.div variants={cardVariants} className="col-span-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-base font-medium">Total Equity</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <Skeleton className="h-20 w-56 mx-auto" />
+              ) : (
+                <div className="text-5xl font-bold text-center py-4">
+                  ${accountData ? parseFloat(accountData.equity).toLocaleString() : '0'}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Cash */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cash</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-8 w-32" />
-            ) : (
-              <div className="text-2xl font-bold">
-                ${accountData ? parseFloat(accountData.cash).toLocaleString() : '0'}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <motion.div variants={cardVariants}>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-base font-medium">Cash</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <Skeleton className="h-10 w-40" />
+              ) : (
+                <div className="text-3xl font-bold">
+                  ${accountData ? parseFloat(accountData.cash).toLocaleString() : '0'}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Buying Power */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Buying Power</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-8 w-32" />
-            ) : (
-              <div className="text-2xl font-bold">
-                ${accountData ? parseFloat(accountData.buying_power).toLocaleString() : '0'}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <motion.div variants={cardVariants}>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-base font-medium">Buying Power</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <Skeleton className="h-10 w-40" />
+              ) : (
+                <div className="text-3xl font-bold">
+                  ${accountData ? parseFloat(accountData.buying_power).toLocaleString() : '0'}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Long/Short Ratio Chart */}
-        <Card className="col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Long/Short Ratio</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-[200px] w-full" />
-            ) : (
-              <div ref={chartRef} className="flex justify-center" />
-            )}
-          </CardContent>
-        </Card>
+        <motion.div variants={cardVariants} className="col-span-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-base font-medium">Long/Short Ratio</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <Skeleton className="h-[200px] w-full" />
+              ) : (
+                <div ref={chartRef} className="flex justify-center" />
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Daytrade Counter */}
-        <Card className="col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Daytrade Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-8 w-32" />
-                <Skeleton className="h-8 w-32" />
-              </div>
-            ) : (
-              <div className="flex items-center justify-between">
-                <span className="text-xl">
-                  {accountData ? `${accountData.daytrade_count}/4 daytrades used` : '0/4 daytrades used'}
-                </span>
-                {accountData?.pattern_day_trader && (
-                  <span className="text-red-500 font-medium">Pattern Day Trader</span>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+        <motion.div variants={cardVariants} className="col-span-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-base font-medium">Daytrade Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-10 w-40" />
+                  <Skeleton className="h-10 w-40" />
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">
+                    {accountData ? `${accountData.daytrade_count}/4 daytrades used` : '0/4 daytrades used'}
+                  </span>
+                  {accountData?.pattern_day_trader && (
+                    <span className="text-red-500 text-xl font-medium">Pattern Day Trader</span>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
 
       {/* Note about auto-refresh */}
       <p className="text-sm text-muted-foreground">
