@@ -3,6 +3,7 @@
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import { Home, Settings, User, MessageSquare } from "lucide-react";
 import { useState } from "react";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 
 const sidebarLinks = [
   {
@@ -34,10 +35,17 @@ export function DashboardClient({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen bg-black">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
         <SidebarBody>
-          <div className="flex flex-col gap-4">
-            {sidebarLinks.map((link) => (
-              <SidebarLink key={link.href} link={link} />
-            ))}
+          <div className="flex flex-col h-full">
+            <div className="flex-1">
+              <div className="flex flex-col gap-4">
+                {sidebarLinks.map((link) => (
+                  <SidebarLink key={link.href} link={link} />
+                ))}
+              </div>
+            </div>
+            <div className="pt-4 border-t border-white/10">
+              <SignOutButton />
+            </div>
           </div>
         </SidebarBody>
       </Sidebar>

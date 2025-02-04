@@ -2,9 +2,9 @@
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import * as React from "react";
-import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { cn } from "@/lib/utils";
 import { Cross2Icon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 const Dialog = DialogPrimitive.Root;
 
@@ -121,12 +121,12 @@ const SignInButton = React.forwardRef<
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
-          <LoginLink 
+          <Link 
+            href="/login"
             className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-            postLoginRedirectURL="/dashboard"
           >
             Sign in to your account
-          </LoginLink>
+          </Link>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
@@ -137,12 +137,12 @@ const SignInButton = React.forwardRef<
               </span>
             </div>
           </div>
-          <RegisterLink 
+          <Link 
+            href="/register"
             className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
-            postLoginRedirectURL="/dashboard"
           >
             Create a new account
-          </RegisterLink>
+          </Link>
         </div>
       </DialogContent>
     </Dialog>

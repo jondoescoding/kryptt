@@ -3,7 +3,7 @@ import { Hero } from "@/components/ui/hero";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { MoveRight } from "lucide-react";
-import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import Link from "next/link";
 
 const faqItems = [
   {
@@ -73,9 +73,9 @@ export default function Home() {
                   className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium text-lg px-8 py-6 h-auto transition-all"
                   asChild
                 >
-                  <LoginLink postLoginRedirectURL="/dashboard">
+                  <Link href="/login">
                     Get Started Now <MoveRight className="w-5 h-5 ml-2" />
-                  </LoginLink>
+                  </Link>
                 </Button>
               </div>
             </div>

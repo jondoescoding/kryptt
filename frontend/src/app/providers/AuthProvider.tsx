@@ -1,7 +1,34 @@
 "use client";
 
-import { KindeProvider } from "@kinde-oss/kinde-auth-nextjs";
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  return <KindeProvider>{children}</KindeProvider>;
-}; 
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        router.push('/')
+      }
+      setIsLoading(false)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [router, supabase.auth])
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+      </div>
+    )
+  }
+
+  return children
+} 
