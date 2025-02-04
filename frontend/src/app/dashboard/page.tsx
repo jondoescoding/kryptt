@@ -114,7 +114,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       {/* Header with refresh button */}
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold">Today</h2>
+        <h2 className="text-3xl font-bold text-white">Today</h2>
         <Button 
           onClick={fetchAccountData} 
           disabled={loading}
