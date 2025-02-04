@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST() {
   try {
-    const response = await fetch('http://localhost:8000/alpaca/account', {
+    const response = await fetch('http://localhost:8000/api/v1/alpaca/account', {
       method: 'POST',
     });
 
