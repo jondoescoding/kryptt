@@ -6,7 +6,7 @@ from .settings import api_keys_store
 
 router = APIRouter(prefix="/alpaca", tags=["alpaca"])
 
-@router.post("/account", response_model=TradeAccountResponse)
+@router.get("/account", response_model=TradeAccountResponse)
 async def get_account_details():
     """
     Retrieve Alpaca trading account details.
@@ -23,30 +23,39 @@ async def get_account_details():
             - 500: Internal server error if Alpaca API call fails
             - 404: If API keys are not configured
     """
+    logging.info_with_emoji("Starting account details retrieval")
+    
     try:
         if "current" not in api_keys_store:
+            logging.error_with_emoji("API keys not found in store")
             raise HTTPException(
                 status_code=404,
                 detail="Alpaca API keys not configured"
             )
             
         keys = api_keys_store["current"]
+        logging.info_with_emoji("Initializing Alpaca Trading Client")
+        
         trading_client = TradingClient(
             api_key=keys["alpaca_api_key"],
             secret_key=keys["alpaca_secret_key"], 
             paper=True
         )
 
+        logging.info_with_emoji("Fetching account information from Alpaca")
         client_information = trading_client.get_account()
         
         logging.info_with_emoji(
-            "Client Information retrieved Successfully"
+            f"Account information retrieved successfully. Account status: {client_information.status}"
         )
         return client_information
         
+    except HTTPException as he:
+        logging.error_with_emoji(f"HTTP Exception: {str(he)}")
+        raise he
     except Exception as e:
-        logging.error_with_emoji(f"Failed to get account details: {str(e)}")
+        logging.error_with_emoji(f"Unexpected error: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=str(e)
+            detail=f"Failed to get account details: {str(e)}"
         )
