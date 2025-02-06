@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "./providers/AuthProvider";
 import { spaceGrotesk } from "./fonts";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Kryptt",
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body className={`${spaceGrotesk.variable} font-sans`}>
         <AuthProvider>
           {children}
+          <Toaster />
         </AuthProvider>
       </body>
     </html>

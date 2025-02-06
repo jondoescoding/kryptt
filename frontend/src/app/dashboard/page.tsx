@@ -8,6 +8,8 @@ import { RefreshCw, AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
+import { useApiKeysStore } from "@/lib/store/api-keys-store";
+import { ApiKeysModal } from "@/components/ui/api-keys-modal";
 
 // Types for our account data
 interface AccountData {
@@ -21,30 +23,45 @@ interface AccountData {
 }
 
 export default function DashboardPage() {
+  const { hasKeys } = useApiKeysStore();
   const [accountData, setAccountData] = useState<AccountData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const chartRef = useRef<HTMLDivElement>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   // Function to fetch account data
   const fetchAccountData = async () => {
-    setLoading(true);
-    setError(null);
+    if (!hasKeys) return;
+    
     try {
-      const response = await fetch('/api/alpaca/account', {
-        method: 'POST',
+      setLoading(true);
+      const response = await fetch('http://localhost:8000/api/v1/alpaca/account', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to fetch account data');
       }
+      
       const data = await response.json();
       setAccountData(data);
+      setError(null);
     } catch (error) {
-      console.error('Failed to fetch account data:', error);
-      setError('Failed to load account data. Please try again.');
+      setError(error instanceof Error ? error.message : 'Failed to load account details');
     } finally {
       setLoading(false);
+      setIsRetrying(false);
     }
+  };
+
+  const handleRetry = async () => {
+    setIsRetrying(true);
+    await fetchAccountData();
   };
 
   // Create ratio chart using Plot
@@ -89,7 +106,7 @@ export default function DashboardPage() {
   // Initial data fetch
   useEffect(() => {
     fetchAccountData();
-  }, []);
+  }, [hasKeys]);
 
   // Animation variants
   const containerVariants = {
@@ -116,21 +133,26 @@ export default function DashboardPage() {
     }
   };
 
+  if (!hasKeys) {
+    return <ApiKeysModal />;
+  }
+
   // If there's an error, show it at the top
   if (error) {
     return (
       <div className="space-y-8">
-        <Alert variant="error">
+        <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
         <Button 
-          onClick={fetchAccountData} 
+          onClick={handleRetry} 
           variant="outline"
           size="sm"
+          disabled={isRetrying}
         >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Try Again
+          <RefreshCw className={`h-4 w-4 mr-2 ${isRetrying ? 'animate-spin' : ''}`} />
+          {isRetrying ? 'Retrying...' : 'Try Again'}
         </Button>
       </div>
     );
