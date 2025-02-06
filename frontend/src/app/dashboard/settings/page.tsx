@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useApiKeysStore } from "@/lib/store/api-keys-store";
 
 const validateGroqKey = (key: string) => {
   return key.startsWith('gsk_');
@@ -34,6 +36,7 @@ export default function SettingsPage() {
   const supabase = createClient();
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const { setKeys: setStoreKeys, clearKeys: clearStoreKeys } = useApiKeysStore();
   const [keys, setKeys] = useState({
     groq: "",
     alpacaApiKey: "",
@@ -161,30 +164,30 @@ export default function SettingsPage() {
 
       const data = await response.json();
       if (response.ok) {
-        // Store in localStorage after successful save
+        // Update Zustand store
+        setStoreKeys(keys.alpacaApiKey, keys.alpacaSecretKey);
+        
+        // Store in localStorage
         localStorage.setItem('groq_key', keys.groq);
         localStorage.setItem('alpaca_api_key', keys.alpacaApiKey);
         localStorage.setItem('alpaca_secret_key', keys.alpacaSecretKey);
         localStorage.setItem('alpaca_endpoint', keys.alpacaEndpoint);
         
-        setStatus({ type: "success", message: "API keys saved successfully" });
+        toast.success("API keys saved successfully");
       } else {
-        setStatus({ 
-          type: "error", 
-          message: data.error || "Failed to save API keys" 
-        });
+        toast.error(data.error || "Failed to save API keys");
       }
     } catch (error) {
-      setStatus({ 
-        type: "error", 
-        message: "Unable to connect to the server" 
-      });
+      toast.error("Unable to connect to the server");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleClearKeys = () => {
+    // Clear Zustand store
+    clearStoreKeys();
+    
     // Clear localStorage
     localStorage.removeItem('groq_key');
     localStorage.removeItem('alpaca_api_key');
@@ -199,7 +202,7 @@ export default function SettingsPage() {
       alpacaEndpoint: "https://paper-api.alpaca.markets/v2",
     });
 
-    setStatus({ type: "success", message: "API keys cleared successfully" });
+    toast.success("API keys cleared successfully");
     setShowClearDialog(false);
   };
 
