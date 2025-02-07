@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.core.logging import logging
-from alpaca.trading.client import TradingClient
+from app.core.config import get_trading_client
 from .models.alpaca_user_data import TradeAccountResponse
 from .settings import api_keys_store
 
@@ -34,13 +34,9 @@ async def get_account_details():
             )
             
         keys = api_keys_store["current"]
-        logging.info_with_emoji("Initializing Alpaca Trading Client")
+        logging.info_with_emoji("Getting Alpaca Trading Client instance")
         
-        trading_client = TradingClient(
-            api_key=keys["alpaca_api_key"],
-            secret_key=keys["alpaca_secret_key"], 
-            paper=True
-        )
+        trading_client = get_trading_client(keys)
 
         logging.info_with_emoji("Fetching account information from Alpaca")
         client_information = trading_client.get_account()

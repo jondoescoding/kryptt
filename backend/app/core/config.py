@@ -25,9 +25,10 @@ Social Media:
 
 import os
 import logging
-from typing import Optional
+from typing import Optional, Dict
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+from alpaca.trading.client import TradingClient
 
 
 class Settings(BaseSettings):
@@ -58,3 +59,32 @@ def setup_logging(settings: Settings) -> None:
         level=getattr(logging, settings.LOG_LEVEL),
         format=settings.LOG_FORMAT
     )
+
+# Cache for the TradingClient instance
+_trading_client_instance = None
+
+def get_trading_client(api_keys: Dict[str, str]) -> TradingClient:
+    """
+    Get or create a cached TradingClient instance.
+    
+    Args:
+        api_keys: Dictionary containing alpaca_api_key and alpaca_secret_key
+        
+    Returns:
+        TradingClient: Cached instance of the Alpaca TradingClient
+    """
+    global _trading_client_instance
+    
+    if _trading_client_instance is None:
+        _trading_client_instance = TradingClient(
+            api_key=api_keys["alpaca_api_key"],
+            secret_key=api_keys["alpaca_secret_key"],
+            paper=True
+        )
+    
+    return _trading_client_instance
+
+def reset_trading_client() -> None:
+    """Reset the cached TradingClient instance."""
+    global _trading_client_instance
+    _trading_client_instance = None
