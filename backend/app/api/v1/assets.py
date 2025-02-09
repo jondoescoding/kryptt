@@ -3,7 +3,6 @@ from app.core.logging import logging
 from app.core.config import get_trading_client
 from alpaca.trading.requests import GetAssetsRequest
 from alpaca.trading.enums import AssetClass, AssetStatus
-from .models.alpaca_user_data import TradeAccountResponse
 from .settings import api_keys_store
 
 router = APIRouter(prefix="/assets", tags=["alpaca"])
