@@ -44,8 +44,8 @@ Column explanations:
 `;
   
   const table = [
-    "| Symbol | Quantity | Current Price | Market Value | Unrealized P/L |",
-    "|--------|----------|---------------|--------------|----------------|"
+    "| Symbol   | Quantity    | Current Price | Market Value | Unrealized P/L |",
+    "|----------|-------------|---------------|--------------|----------------|"
   ];
   
   positions.forEach(pos => {
@@ -55,7 +55,7 @@ Column explanations:
     const unrealizedPL = parseFloat(pos.unrealized_pl).toFixed(2);
     
     table.push(
-      `| ${pos.symbol} | ${qty} | $${currentPrice} | $${marketValue} | $${unrealizedPL} |`
+      `| ${pos.symbol.padEnd(8)} | ${qty.padEnd(11)} | $${currentPrice.padEnd(11)} | $${marketValue.padEnd(10)} | $${unrealizedPL.padEnd(10)} |`
     );
   });
   

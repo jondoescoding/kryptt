@@ -9,6 +9,7 @@ import { useChat } from 'ai/react';
 import { LoadingDots } from "@/components/ui/loading-dots";
 import { useState } from "react";
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import dynamic from 'next/dynamic';
 
 const Chart = dynamic(() => import('@/components/ui/chart'), { ssr: false });
@@ -104,8 +105,16 @@ export default function ChatPage() {
                     : "bg-zinc-800 text-white/70 hover:border-yellow-400/50 hover:bg-zinc-700 border border-transparent"
                 }`}
               >
-                <div className={`prose prose-invert max-w-none ${message.role === "user" ? "text-black" : ""}`}>
-                  <ReactMarkdown>
+                <div
+                className={`prose prose-invert max-w-none ${message.role === "user" ? "text-black" : ""} 
+                prose-table:border-zinc-700 
+                prose-td:border-zinc-700 
+                prose-th:border-zinc-700 
+                prose-td:p-2 
+                prose-th:p-2
+                prose-tr:border-zinc-700
+                prose-thead:border-zinc-700`}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {message.content}
                   </ReactMarkdown>
                   {message.role === "assistant" && message.content.includes("View As Chart") && (
