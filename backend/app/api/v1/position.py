@@ -1,10 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from app.core.logging import logging
 from app.core.config import get_trading_client
-from alpaca.trading.models import Position
 from alpaca.trading.enums import AssetClass
 from .settings import api_keys_store
-from typing import Union, Any, List, Dict
+from typing import List
 from .models.position import CryptoPosition
 
 router = APIRouter(prefix="/positions", tags=["alpaca"])

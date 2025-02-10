@@ -3,15 +3,21 @@
 import { ChatMessageList } from "@/components/ui/chat-message-list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
+import { Send, BarChart, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useChat } from 'ai/react';
 import { LoadingDots } from "@/components/ui/loading-dots";
 import { useState } from "react";
 import ReactMarkdown from 'react-markdown';
+import dynamic from 'next/dynamic';
+
+const Chart = dynamic(() => import('@/components/ui/chart'), { ssr: false });
 
 export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
+  const [showChart, setShowChart] = useState(false);
+  const [chartData, setChartData] = useState<any>(null);
+  
   const { messages, input, handleInputChange, handleSubmit: originalHandleSubmit } = useChat({
     api: '/api/chat',
     onFinish: () => setIsTyping(false),
@@ -19,7 +25,36 @@ export default function ChatPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setIsTyping(true);
+    setShowChart(false);
     await originalHandleSubmit(e);
+  };
+
+  const handleViewChart = async () => {
+    try {
+      const response = await fetch('/api/positions');
+      const positions = await response.json();
+      
+      const data = {
+        labels: positions.map((p: any) => p.symbol),
+        datasets: [
+          {
+            label: 'Market Value ($)',
+            data: positions.map((p: any) => parseFloat(p.market_value)),
+            backgroundColor: '#EAB308',
+          },
+          {
+            label: 'Unrealized P/L ($)',
+            data: positions.map((p: any) => parseFloat(p.unrealized_pl)),
+            backgroundColor: '#22C55E',
+          }
+        ]
+      };
+      
+      setChartData(data);
+      setShowChart(true);
+    } catch (error) {
+      console.error('Failed to load chart data:', error);
+    }
   };
 
   return (
@@ -47,6 +82,15 @@ export default function ChatPage() {
                   <ReactMarkdown>
                     {message.content}
                   </ReactMarkdown>
+                  {message.role === "assistant" && message.content.includes("View As Chart") && (
+                    <Button
+                      onClick={handleViewChart}
+                      className="mt-2 bg-yellow-400 hover:bg-yellow-500 text-black"
+                    >
+                      <BarChart className="h-4 w-4 mr-2" />
+                      View As Chart
+                    </Button>
+                  )}
                 </div>
                 <span className={`text-xs ${
                   message.role === "user" 
@@ -58,6 +102,18 @@ export default function ChatPage() {
               </div>
             </motion.div>
           ))}
+          {showChart && chartData && (
+            <motion.div
+              className="w-full p-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="bg-zinc-800 p-4 rounded-lg">
+                <Chart data={chartData} />
+              </div>
+            </motion.div>
+          )}
           {isTyping && !messages[messages.length - 1]?.content && (
             <motion.div
               className="flex justify-start"
@@ -85,10 +141,14 @@ export default function ChatPage() {
         <Button 
           type="submit"
           size="icon"
-          className="bg-yellow-400 hover:bg-yellow-500 text-black"
+          className="bg-yellow-400 hover:bg-yellow-500 text-black transition-all duration-200"
           disabled={isTyping}
         >
-          <Send className="h-4 w-4" />
+          {isTyping ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
         </Button>
       </form>
     </div>

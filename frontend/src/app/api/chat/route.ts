@@ -9,9 +9,62 @@ const openrouter = createOpenRouter({
 export const runtime = 'edge';
 export const maxDuration = 30; // Allow streaming responses up to 30 seconds
 
+// Function to check if message is requesting positions
+function isRequestingPositions(message: string): boolean {
+  const triggers = [
+    'let me see my position',
+    'show my position',
+    'what are my current holdings',
+    'show my holdings',
+    'current positions',
+    'view positions'
+  ];
+  return triggers.some(trigger => 
+    message.toLowerCase().includes(trigger.toLowerCase())
+  );
+}
+
+// Function to format positions as a table
+function formatPositionsTable(positions: any[]): string {
+  if (!positions.length) return "No positions found.";
+  
+  const table = [
+    "| Symbol | Quantity | Current Price | Market Value | Unrealized P/L |",
+    "|--------|----------|---------------|--------------|----------------|"
+  ];
+  
+  positions.forEach(pos => {
+    table.push(
+      `| ${pos.symbol} | ${pos.qty} | $${pos.current_price} | $${pos.market_value} | $${pos.unrealized_pl} |`
+    );
+  });
+  
+  return table.join('\n');
+}
+
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
+    const lastMessage = messages[messages.length - 1].content;
+
+    // Check if user is requesting positions
+    if (isRequestingPositions(lastMessage)) {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/positions/crypto-positions`);
+        if (!response.ok) throw new Error('Failed to fetch positions');
+        
+        const positions = await response.json();
+        const formattedTable = formatPositionsTable(positions);
+        
+        const positionResponse = `Here are your current positions:\n\n${formattedTable}\n\nWould you like to view this as a chart? Click the "View As Chart" button below.`;
+        
+        return new Response(positionResponse);
+      } catch (error) {
+        return new Response(
+          "Sorry, I couldn't fetch your positions right now. Please try again in a moment."
+        );
+      }
+    }
 
     // Define the model ID for Gemini
     const MODEL_ID = 'google/gemini-2.0-flash-thinking-exp:free';
