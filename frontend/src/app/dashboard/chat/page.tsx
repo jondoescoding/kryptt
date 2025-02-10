@@ -31,29 +31,55 @@ export default function ChatPage() {
 
   const handleViewChart = async () => {
     try {
-      const response = await fetch('/api/positions');
-      const positions = await response.json();
+      const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/api/v1/positions/crypto-positions`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store'
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Position fetch failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText
+        });
+        throw new Error('Failed to fetch positions');
+      }
       
-      const data = {
+      const data = await response.json();
+      const positions = Array.isArray(data) ? data : [];
+      
+      if (positions.length === 0) {
+        console.warn('No positions data available');
+        return;
+      }
+      
+      const chartData = {
         labels: positions.map((p: any) => p.symbol),
         datasets: [
           {
             label: 'Market Value ($)',
-            data: positions.map((p: any) => parseFloat(p.market_value)),
+            data: positions.map((p: any) => parseFloat(p.market_value) || 0),
             backgroundColor: '#EAB308',
           },
           {
             label: 'Unrealized P/L ($)',
-            data: positions.map((p: any) => parseFloat(p.unrealized_pl)),
+            data: positions.map((p: any) => parseFloat(p.unrealized_pl) || 0),
             backgroundColor: '#22C55E',
           }
         ]
       };
       
-      setChartData(data);
+      setChartData(chartData);
       setShowChart(true);
     } catch (error) {
       console.error('Failed to load chart data:', error);
+      setShowChart(false);
     }
   };
 

@@ -6,6 +6,9 @@ const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY || '',
 });
 
+// Define the model ID for Gemini
+const MODEL_ID = 'google/gemini-2.0-flash-thinking-exp:free';
+
 export const runtime = 'edge';
 export const maxDuration = 30; // Allow streaming responses up to 30 seconds
 
@@ -28,18 +31,35 @@ function isRequestingPositions(message: string): boolean {
 function formatPositionsTable(positions: any[]): string {
   if (!positions.length) return "No positions found.";
   
+  const explanationText = `
+BTCUSD represents Bitcoin vs US Dollar
+ETHUSD represents Ethereum vs US Dollar
+
+Column explanations:
+- Symbol: The trading pair
+- Quantity: Amount of cryptocurrency held
+- Current Price: Current market price in USD
+- Market Value: Total value of your position (Quantity × Current Price)
+- Unrealized P/L: Unrealized Profit/Loss (Current Value - Cost Basis)
+`;
+  
   const table = [
     "| Symbol | Quantity | Current Price | Market Value | Unrealized P/L |",
     "|--------|----------|---------------|--------------|----------------|"
   ];
   
   positions.forEach(pos => {
+    const qty = parseFloat(pos.qty).toFixed(8);
+    const currentPrice = parseFloat(pos.current_price).toFixed(2);
+    const marketValue = parseFloat(pos.market_value).toFixed(2);
+    const unrealizedPL = parseFloat(pos.unrealized_pl).toFixed(2);
+    
     table.push(
-      `| ${pos.symbol} | ${pos.qty} | $${pos.current_price} | $${pos.market_value} | $${pos.unrealized_pl} |`
+      `| ${pos.symbol} | ${qty} | $${currentPrice} | $${marketValue} | $${unrealizedPL} |`
     );
   });
   
-  return table.join('\n');
+  return `${explanationText}\n${table.join('\n')}`;
 }
 
 export async function POST(req: Request) {
@@ -50,24 +70,66 @@ export async function POST(req: Request) {
     // Check if user is requesting positions
     if (isRequestingPositions(lastMessage)) {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/positions/crypto-positions`);
-        if (!response.ok) throw new Error('Failed to fetch positions');
+        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+        console.log('Fetching positions from:', `${apiUrl}/api/v1/positions/crypto-positions`);
+        
+        const response = await fetch(`${apiUrl}/api/v1/positions/crypto-positions`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          cache: 'no-store'
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Position fetch failed:', {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorText
+          });
+          return streamText({
+            model: openrouter(MODEL_ID),
+            messages: [
+              ...messages,
+              {
+                role: "assistant",
+                content: "Sorry, I couldn't fetch your positions right now. Please try again in a moment."
+              }
+            ]
+          }).toDataStreamResponse();
+        }
         
         const positions = await response.json();
         const formattedTable = formatPositionsTable(positions);
         
         const positionResponse = `Here are your current positions:\n\n${formattedTable}\n\nWould you like to view this as a chart? Click the "View As Chart" button below.`;
         
-        return new Response(positionResponse);
+        return streamText({
+          model: openrouter(MODEL_ID),
+          messages: [
+            ...messages,
+            {
+              role: "assistant",
+              content: positionResponse
+            }
+          ]
+        }).toDataStreamResponse();
       } catch (error) {
-        return new Response(
-          "Sorry, I couldn't fetch your positions right now. Please try again in a moment."
-        );
+        console.error('Error fetching positions:', error);
+        return streamText({
+          model: openrouter(MODEL_ID),
+          messages: [
+            ...messages,
+            {
+              role: "assistant",
+              content: "Sorry, I couldn't fetch your positions right now. Please try again in a moment."
+            }
+          ]
+        }).toDataStreamResponse();
       }
     }
-
-    // Define the model ID for Gemini
-    const MODEL_ID = 'google/gemini-2.0-flash-thinking-exp:free';
 
     const result = await streamText({
       model: openrouter(MODEL_ID),
