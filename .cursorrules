@@ -6,6 +6,7 @@
 Code Formatting:
 - Within the multi-line code blocks, use the following format for the code:
 
+## Python Only
 ```python
 """
 Project: Kryptt
