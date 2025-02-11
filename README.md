@@ -31,12 +31,12 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-## # Starting the backend server
+## Starting the backend server
 ```python-repl
 uvicorn app.main:app --reload --port 8000
 ```
 
-## # Starting the frontend
+## Starting the frontend
 ```typescript
 npm install
 npm run dev
