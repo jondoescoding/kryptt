@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@observablehq/plot": "^0.6.16",
-    "@openrouter/ai-sdk-provider": "^0.2.1",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.5",
     "@radix-ui/react-dialog": "^1.1.5",
@@ -25,7 +24,6 @@
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.48.1",
     "@tabler/icons-react": "^3.29.0",
-    "ai": "^4.1.26",
     "chart.js": "^4.4.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

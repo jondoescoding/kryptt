@@ -44,7 +44,7 @@ uvicorn app.main:app --reload --port 8000
 ## Roadmap 🗺️
 
 - [ ] Recurring orders ("Buy every Monday")
-- [ ] JMD-denominated portfolio view
+- [X] JMD-denominated portfolio view
 - [ ] WhatsApp trading integration
 - [ ] Trading based on monetary events (e.g. "Buy $50 AAPL when it hits $150")
 - [ ] Trading based on news events (e.g. "Sell $50 NVIDIA if the article is negative")

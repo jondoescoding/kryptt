@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, BarChart, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useChat } from 'ai/react';
 import { LoadingDots } from "@/components/ui/loading-dots";
 import { useState } from "react";
 import ReactMarkdown from 'react-markdown';
@@ -14,20 +13,95 @@ import dynamic from 'next/dynamic';
 
 const Chart = dynamic(() => import('@/components/ui/chart'), { ssr: false });
 
+type Message = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+};
+
 export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [showChart, setShowChart] = useState(false);
   const [chartData, setChartData] = useState<any>(null);
-  
-  const { messages, input, handleInputChange, handleSubmit: originalHandleSubmit } = useChat({
-    api: '/api/chat',
-    onFinish: () => setIsTyping(false),
-  });
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
     setIsTyping(true);
     setShowChart(false);
-    await originalHandleSubmit(e);
+
+    // Add user message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: input
+    };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/api/v1/agent/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: input
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to send message');
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No reader available');
+
+      let content = '';
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.trim() === '') continue;
+          try {
+            const parsed = JSON.parse(line);
+            if (parsed.role === 'assistant') {
+              content = parsed.content;
+              setMessages(prev => {
+                const lastMessage = prev[prev.length - 1];
+                if (lastMessage?.role === 'assistant') {
+                  return [...prev.slice(0, -1), { ...lastMessage, content }];
+                }
+                return [...prev, { id: Date.now().toString(), role: 'assistant', content }];
+              });
+            }
+          } catch (e) {
+            console.error('Failed to parse chunk:', e);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: 'Sorry, something went wrong. Please try again.'
+      }]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleViewChart = async () => {
