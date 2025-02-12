@@ -31,15 +31,20 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-## # Starting the server
-
+## Starting the backend server
 ```python-repl
 uvicorn app.main:app --reload --port 8000
 ```
 
+## Starting the frontend
+```typescript
+npm install
+npm run dev
+```
+
 ## Core Tech Stack ⚙️
 
-`Alpaca API` · `Clerk Auth` · `Groq LPU` · `LangChain` · `FastAPI`
+`Alpaca API` · `Supabase` · `Groq` · `LangGraph` · `FastAPI`
 
 ## Roadmap 🗺️
 
