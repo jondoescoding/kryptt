@@ -32,7 +32,7 @@ const agents: Agent[] = [
   {
     id: 'position',
     name: 'Position Agent',
-    endpoint: '/api/v1/agent/chat'
+    endpoint: '/api/v1/agents/position-agent/chat'
   }
 ];
 
@@ -173,7 +173,7 @@ export default function ChatPage() {
           )}
         </div>
       </div>
-      <div className="border-t border-zinc-800 bg-zinc-900 p-4">
+      <div className="border-t border-zinc-800 p-4">
         <div className="max-w-3xl mx-auto">
           <ChatInput value={input} onChange={handleInputChange} onSubmit={handleSubmit}>
             <div className="flex items-center gap-2 w-full">
@@ -184,7 +184,7 @@ export default function ChatPage() {
                   if (agent) setSelectedAgent(agent);
                 }}
               >
-                <SelectTrigger className="w-[180px] bg-zinc-800 border-zinc-700">
+                <SelectTrigger className="w-[180px] bg-transparent border-zinc-700 text-white">
                   <SelectValue placeholder="Select agent" />
                 </SelectTrigger>
                 <SelectContent>
@@ -197,7 +197,7 @@ export default function ChatPage() {
               </Select>
               <ChatInputTextArea
                 placeholder="Type your message..."
-                className="flex-1 bg-zinc-800 border-zinc-700 text-white/70 placeholder:text-white/40"
+                className="flex-1 bg-transparent border-zinc-700 text-white/70 placeholder:text-white/40"
                 disabled={isTyping}
               />
               <ChatInputSubmit disabled={isTyping}>

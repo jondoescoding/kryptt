@@ -1,5 +1,5 @@
 ---
-description: The backend of the app
+description: To determine what the tech stack is on the backend
 globs: 
 ---
 ---
@@ -14,7 +14,6 @@ globs:
 | --------------------------- | --------------------- | ----------------------------------------------------------------------------------------------- |
 | **Backend Framework** | Python + FastAPI      | Async-ready, lightweight, and aligns with[Alpaca.py/LangChain](mdc:http:/alpaca.py/LangChain)tooling. |
 | **Database**          | PostgreSQL (Supabase) | Relational structure for trades/user data; integrates with Clerk auth.                          |
-| **Authentication**    | Kinde    | Session management handled by Kinde                               |
 
 ---
 
@@ -27,8 +26,6 @@ globs:
 1. **Groq** :
 
 * LLM processes natural language into structured trade commands.
-
-1. **Kinde** :
 
 1. **Paddle** :
 
@@ -44,10 +41,6 @@ globs:
 2. Backend sends command to Groq for parsing.
 3. LangChain validates command structure (symbol, action, amount).
 4. Validated command → Alpaca API execution.
-
-### **Authentication**
-
-This is handled by Kinde
 
 ## **4. Deployment**
 

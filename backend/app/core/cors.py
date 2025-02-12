@@ -20,7 +20,8 @@ def setup_cors(app: FastAPI, settings: Settings) -> None:
         "http://localhost:3000",    # Next.js development server
         "http://127.0.0.1:3000",    # Alternative local development
         "http://localhost:8000",    # FastAPI development server
-        "http://127.0.0.1:8000",    # Alternative FastAPI local
+        "http://127.0.0.1:8000",    # Alternative FastAPI local,
+        "*" # all origins
     ]
     
     # Add production origins if not in debug mode

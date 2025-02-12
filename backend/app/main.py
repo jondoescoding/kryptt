@@ -19,10 +19,11 @@ Social Media:
 
 import os
 from fastapi import FastAPI
-from .core.config import get_settings
+from .core.config import get_settings, initialize_trading_client
 from .core.cors import setup_cors
-from .core.logging import setup_logging, RequestLoggingMiddleware
+from .core.logging import setup_logging, RequestLoggingMiddleware, logging
 from .api.v1 import router as api_v1_router
+from .api.v1.settings import api_keys_store
 
 # Create FastAPI application
 app = FastAPI(
@@ -58,3 +59,13 @@ async def root():
         "docs_url": "/docs",
         "openapi_url": "/openapi.json"
     }
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize services on application startup."""
+    if "current" in api_keys_store:
+        try:
+            initialize_trading_client(api_keys_store["current"])
+            logging.info_with_emoji("🚀 Trading client initialized successfully")
+        except Exception as e:
+            logging.error_with_emoji(f"❌ Failed to initialize trading client: {str(e)}")

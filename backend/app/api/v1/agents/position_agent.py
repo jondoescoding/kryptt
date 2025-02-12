@@ -1,7 +1,7 @@
 from langgraph.prebuilt import create_react_agent
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
-from ..position import get_crypto_positions
+from app.api.v1.tools.position import get_crypto_positions, get_open_position
 from ..settings import api_keys_store
 from langchain_groq import ChatGroq
 from typing import AsyncGenerator, Dict, Optional, List
@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from langchain_core.messages import HumanMessage, AIMessage
 import json
 
-router = APIRouter(prefix="/agent", tags=["agent"])
+router = APIRouter(prefix="/agents/position-agent", tags=["agents"])
 
 class ChatRequest(BaseModel):
     """Request model for chat endpoint."""
@@ -39,7 +39,6 @@ def setup_position_agent():
     """
     try:
         if "current" not in api_keys_store:
-            print("BRUH")
             raise HTTPException(
                 status_code=404,
                 detail="Alpaca API keys not configured"
@@ -58,7 +57,7 @@ def setup_position_agent():
         
         return create_react_agent(
             model=llm,
-            tools=[get_crypto_positions],
+            tools=[get_crypto_positions, get_open_position],
             name="Alpaca Trading Position Agent",
             prompt="You are a world class data representer with access to a given user's trading positions."
         )

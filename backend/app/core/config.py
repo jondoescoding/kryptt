@@ -63,24 +63,39 @@ def setup_logging(settings: Settings) -> None:
 # Cache for the TradingClient instance
 _trading_client_instance = None
 
-def get_trading_client(api_keys: Dict[str, str]) -> TradingClient:
+def initialize_trading_client(api_keys: Dict[str, str]) -> None:
     """
-    Get or create a cached TradingClient instance.
+    Initialize the global TradingClient instance.
     
     Args:
         api_keys: Dictionary containing alpaca_api_key and alpaca_secret_key
+    """
+    global _trading_client_instance
+    _trading_client_instance = TradingClient(
+        api_key=api_keys["alpaca_api_key"],
+        secret_key=api_keys["alpaca_secret_key"],
+        paper=True
+    )
+
+def get_trading_client(api_keys: Dict[str, str] = None) -> TradingClient:
+    """
+    Get the cached TradingClient instance.
+    
+    Args:
+        api_keys: Optional dictionary containing API keys for initialization if needed
         
     Returns:
         TradingClient: Cached instance of the Alpaca TradingClient
+        
+    Raises:
+        RuntimeError: If trading client is not initialized
     """
     global _trading_client_instance
     
     if _trading_client_instance is None:
-        _trading_client_instance = TradingClient(
-            api_key=api_keys["alpaca_api_key"],
-            secret_key=api_keys["alpaca_secret_key"],
-            paper=True
-        )
+        if api_keys is None:
+            raise RuntimeError("Trading client not initialized")
+        initialize_trading_client(api_keys)
     
     return _trading_client_instance
 
