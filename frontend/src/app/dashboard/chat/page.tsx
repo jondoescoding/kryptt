@@ -2,11 +2,10 @@
 
 import { ChatInput, ChatInputTextArea, ChatInputSubmit } from "@/components/ui/chat-input";
 import { Button } from "@/components/ui/button";
-import { LoadingDots } from "@/components/ui/loading-dots";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Select,
   SelectContent,
@@ -36,11 +35,50 @@ const agents: Agent[] = [
   }
 ];
 
+const LoadingIndicator = () => {
+  return (
+    <motion.div
+      className="flex space-x-1 items-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      {[0, 1, 2].map((dot) => (
+        <motion.div
+          key={dot}
+          className="w-2 h-2 bg-yellow-400 rounded-full"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.4, 1, 0.4],
+          }}
+          transition={{
+            duration: 1.2,
+            repeat: Infinity,
+            delay: dot * 0.2,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </motion.div>
+  );
+};
+
 export default function ChatPage() {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [selectedAgent, setSelectedAgent] = useState<Agent>(agents[0]);
+
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]); // Scroll on messages change or typing state change
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
@@ -59,6 +97,14 @@ export default function ChatPage() {
     };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+
+    // Add a placeholder message for the assistant
+    const assistantMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: ''
+    };
+    setMessages(prev => [...prev, assistantMessage]);
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
@@ -139,15 +185,34 @@ export default function ChatPage() {
                     : "bg-zinc-800 text-white/70 hover:border-yellow-400/50 hover:bg-zinc-700 border border-transparent"
                 }`}
               >
-                <div
-                  className={`prose prose-invert max-w-none ${
-                    message.role === "user" ? "text-black" : ""
-                  } prose-table:border-zinc-700 prose-td:border-zinc-700 prose-th:border-zinc-700 prose-td:p-2 prose-th:p-2 prose-tr:border-zinc-700 prose-thead:border-zinc-700`}
-                >
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {message.content}
-                  </ReactMarkdown>
-                </div>
+                <AnimatePresence mode="wait">
+                  {message.role === "assistant" && !message.content && isTyping ? (
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <LoadingIndicator />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="content"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className={`prose prose-invert max-w-none ${
+                        message.role === "user" ? "text-black" : ""
+                      } prose-table:border-zinc-700 prose-td:border-zinc-700 prose-th:border-zinc-700 prose-td:p-2 prose-th:p-2 prose-tr:border-zinc-700 prose-thead:border-zinc-700`}
+                    >
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {message.content}
+                      </ReactMarkdown>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 <span
                   className={`text-xs ${
                     message.role === "user" ? "opacity-70" : "text-white/50"
@@ -158,19 +223,7 @@ export default function ChatPage() {
               </div>
             </motion.div>
           ))}
-          {isTyping && !messages[messages.length - 1]?.content && (
-            <motion.div
-              className="flex justify-start"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="max-w-[80%] rounded-lg px-4 py-2 bg-zinc-800 text-white/70 border border-transparent">
-                <LoadingDots />
-              </div>
-            </motion.div>
-          )}
+          <div ref={messagesEndRef} /> {/* Scroll anchor */}
         </div>
       </div>
       <div className="border-t border-zinc-800 p-4">

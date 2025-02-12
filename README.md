@@ -32,11 +32,13 @@ cp .env.example .env
 ```
 
 ## Starting the backend server
+
 ```python-repl
 uvicorn app.main:app --reload --port 8000
 ```
 
 ## Starting the frontend
+
 ```typescript
 npm install
 npm run dev
@@ -48,12 +50,11 @@ npm run dev
 
 ## Roadmap 🗺️
 
-- [ ] Recurring orders ("Buy every Monday")
 - [X] JMD-denominated portfolio view
+- [ ] Recurring orders ("Buy every Monday")
 - [ ] WhatsApp trading integration
-- [ ] Trading based on monetary events (e.g. "Buy $50 AAPL when it hits $150")
-- [ ] Trading based on news events (e.g. "Sell $50 NVIDIA if the article is negative")
-- [ ] Trading based on social media (e.g. "Buy $50 DOGE when ELON tweets")
-- [ ] Trading based on technical analysis (e.g. "Buy $50 AAPL if the RSI is below 30")
+- [ ] Trading based on monetary events (e.g. "Buy $50 ETHUSD when it hits $150")
+- [ ] Trading based on social media (e.g. "Buy $50 DOGEUSD when ELON tweets")
+- [ ] Trading based on technical analysis (e.g. "Buy $50 $BTCUSD if the RSI is below 30")
 
 _Licensed under [GPLv3](LICENSE)_ • [Report Issue](https://github.com/jondoescoding/crypt/issues)
