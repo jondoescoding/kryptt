@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from app.core.logging import logging
 from app.core.config import get_trading_client
 from alpaca.trading.enums import AssetClass
+from alpaca.trading.models import Order
 from ..settings import api_keys_store
 from typing import List, Union
 from uuid import UUID
@@ -163,3 +164,52 @@ async def get_open_position(symbol_or_asset_id: Union[UUID, str]) -> CryptoPosit
             detail=f"Failed to get position: {str(e)}"
         )
     
+@tool
+async def close_a_position(symbol_or_asset_id: Union[UUID, str]) -> Order:
+    """
+    Closes a crypto position completely for the given symbol or asset ID.
+    
+    Args:
+        symbol_or_asset_id: The symbol or asset ID of the crypto position to close
+        
+    Returns:
+        Order: The order details for the closed position
+        
+    Raises:
+        HTTPException: 
+            - 404: Position not found
+            - 400: Invalid asset type (non-crypto)
+            - 500: Internal server error
+    """
+    logging.info_with_emoji(f"🔄 Starting closure of position for {symbol_or_asset_id}...")
+    
+    try:
+        trading_client = get_trading_client()
+        
+        # Verify it's a crypto position first
+        position = trading_client.get_open_position(str(symbol_or_asset_id))
+        if position.asset_class != AssetClass.CRYPTO:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Asset {symbol_or_asset_id} is not a cryptocurrency"
+            )
+            
+        # Close the position
+        logging.info_with_emoji(f"📉 Closing position for {symbol_or_asset_id}")
+        closure_result = trading_client.close_position(str(symbol_or_asset_id))
+        
+        # Log the closure details
+        logging.info_with_emoji(f"✅ Successfully closed position for {symbol_or_asset_id}")
+        logging.info_with_emoji(f"📊 Closure details: {closure_result}")
+        
+        return f"Here are the details of the sucessful closure: {closure_result}"
+        
+    except HTTPException as he:
+        logging.error_with_emoji(f"❌ HTTP Exception: {str(he)}")
+        raise he
+    except Exception as e:
+        logging.error_with_emoji(f"❌ Unexpected error while closing position: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to close position: {str(e)}"
+        )
