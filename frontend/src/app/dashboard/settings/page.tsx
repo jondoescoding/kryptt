@@ -128,7 +128,7 @@ export default function SettingsPage() {
       case "groq":
         setErrors(prev => ({
           ...prev,
-          groq: validateGroqKey(value) ? "" : "Invalid Groq key format. Should start with 'gsk_'"
+          groq: ""
         }));
         break;
       case "alpacaApiKey":
