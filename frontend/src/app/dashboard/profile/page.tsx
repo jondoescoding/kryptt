@@ -178,6 +178,8 @@ const ProfilePicture = ({
             accept="image/png,image/jpeg,image/jpg,image/svg+xml"
             onChange={handleFileChange}
             disabled={uploading}
+            aria-label="Upload profile picture"
+            title="Upload profile picture"
           />
           {previewUrl && (
             <Button 
