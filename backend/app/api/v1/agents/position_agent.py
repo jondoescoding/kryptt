@@ -1,13 +1,23 @@
+"""
+Project: Kryptt
+Author: Jon
+Social Media:
+- Twitter: @jondoescoding
+Date: January 2024
+"""
+
 from langgraph.prebuilt import create_react_agent
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
-from app.api.v1.tools.position import get_crypto_positions, get_open_position
+from app.api.v1.tools.position import get_crypto_positions, get_open_position, close_a_position
 from ..settings import api_keys_store
-from langchain_groq import ChatGroq
-from typing import AsyncGenerator, Dict, Optional, List
+from langchain_openai import ChatOpenAI
+from typing import AsyncGenerator, Optional
 from pydantic import BaseModel, Field
 from langchain_core.messages import HumanMessage, AIMessage
+from app.core.logging import logging
 import json
+import time
 
 router = APIRouter(prefix="/agents/position-agent", tags=["agents"])
 
@@ -37,33 +47,48 @@ def setup_position_agent():
     Raises:
         HTTPException: If API keys are not configured or other setup errors occur
     """
+    logging.info_with_emoji("🤖 Setting up position agent...")
     try:
         if "current" not in api_keys_store:
+            logging.error_with_emoji("🔑 API keys not found in store")
             raise HTTPException(
                 status_code=404,
                 detail="Alpaca API keys not configured"
             )
             
         keys = api_keys_store["current"]
-        
-        llm = ChatGroq(
-            model="llama-3.3-70b-versatile",
+        logging.info_with_emoji("🔑 API keys retrieved successfully")
+    
+        logging.info_with_emoji("🧠 Initializing ChatOpenAI model...")
+        llm = ChatOpenAI(
+            model="gpt-4o",
             api_key=keys["groq"],
-            temperature=0,
+            temperature=0.1,
             max_tokens=None,
             timeout=None,
             max_retries=2,
         )
         
-        return create_react_agent(
+        logging.info_with_emoji("🛠️ Creating React agent...")
+        agent = create_react_agent(
             model=llm,
-            tools=[get_crypto_positions, get_open_position],
-            name="Alpaca Trading Position Agent",
-            prompt="You are a world class data representer with access to a given user's trading positions."
+            tools=[get_crypto_positions, get_open_position, close_a_position],
+            name="Alpaca-Trading-Position-Agent-Trading-Bot",
+            prompt="You are a trader bot. You will be given tasks to carry out which involve: opening a position, closing a position and getting details about a specific position."
         )
         
+        logging.info_with_emoji("✅ Position agent setup completed successfully")
+        return agent
+        
     except HTTPException as he:
+        logging.error_with_emoji(f"❌ HTTP Exception during agent setup: {str(he)}")
         raise he
+    except Exception as e:
+        logging.error_with_emoji(f"❌ Unexpected error during agent setup: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to setup position agent: {str(e)}"
+        )
 
 def get_agent():
     """
@@ -76,12 +101,17 @@ def get_agent():
         HTTPException: If agent setup fails
     """
     global _position_agent
+    logging.info_with_emoji("🤖 Getting position agent instance...")
     if _position_agent is None:
+        logging.info_with_emoji("🆕 Creating new position agent instance...")
         _position_agent = setup_position_agent()
     return _position_agent
 
 async def stream_agent_response(message: str) -> AsyncGenerator[str, None]:
     """Stream the agent's response."""
+    start_time = time.time()
+    logging.info_with_emoji(f"📝 Processing message: {message}")
+    
     try:
         # Get or initialize agent
         agent = get_agent()
@@ -93,6 +123,7 @@ async def stream_agent_response(message: str) -> AsyncGenerator[str, None]:
         }
         
         # Initialize agent with message
+        logging.info_with_emoji("🤖 Invoking agent...")
         agent_response = await agent.ainvoke(agent_state)
         
         # Extract the last message from the response
@@ -107,9 +138,14 @@ async def stream_agent_response(message: str) -> AsyncGenerator[str, None]:
             role="assistant",
             content=content
         )
+        
+        processing_time = time.time() - start_time
+        logging.info_with_emoji(f"✅ Response generated in {processing_time:.2f} seconds")
+        
         yield json.dumps(response_chunk.model_dump()) + "\n"
         
     except Exception as e:
+        logging.error_with_emoji(f"❌ Error generating response: {str(e)}")
         error_chunk = ChatResponse(
             role="assistant",
             content=f"Error: {str(e)}"
@@ -137,6 +173,7 @@ async def chat_with_agent(request: ChatRequest):
     Returns:
         StreamingResponse: Streamed agent responses
     """
+    logging.info_with_emoji(f"📨 Received chat request: {request.message}")
     return StreamingResponse(
         stream_agent_response(request.message),
         media_type="text/event-stream"
