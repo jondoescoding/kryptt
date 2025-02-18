@@ -106,10 +106,6 @@ def setup_logging(settings: Settings) -> None:
         format=log_format,
         handlers=[
             logging.StreamHandler(),
-            logging.FileHandler(
-                filename="logs/kryptt-api.log",
-                encoding="utf-8",
-            ),
         ],
     )
     
