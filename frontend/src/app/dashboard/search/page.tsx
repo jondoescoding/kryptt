@@ -11,8 +11,8 @@ interface Token {
   symbol: string
   name: string
   exchange: string
-  minOrderSize: number
-  priceIncrement: number
+  min_order_size: number
+  price_increment: number
 }
 
 export default function SearchPage() {
@@ -159,8 +159,8 @@ export default function SearchPage() {
                   <p className="text-white">{token.name}</p>
                   <div className="mt-2 text-sm text-gray-400">
                     <p>Exchange: {token.exchange}</p>
-                    <p>Min Order: {token.minOrderSize}</p>
-                    <p>Price Increment: {token.priceIncrement}</p>
+                    <p>Min Order: {token.min_order_size}</p>
+                    <p>Price Increment: {token.price_increment}</p>
                   </div>
                 </motion.div>
               ))}
