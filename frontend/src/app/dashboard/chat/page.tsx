@@ -32,6 +32,11 @@ const agents: Agent[] = [
     id: 'position',
     name: 'Position Agent',
     endpoint: '/api/v1/agents/position-agent/chat'
+  },
+  {
+    id: 'order',
+    name: 'Orders Agent',
+    endpoint: '/api/v1/agents/order-agent/chat'
   }
 ];
 

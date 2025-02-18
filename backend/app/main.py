@@ -48,7 +48,7 @@ app.add_middleware(RequestLoggingMiddleware)
 app.include_router(api_v1_router, prefix="/api")
 
 # Create logs directory if it doesn't exist
-os.makedirs("logs", exist_ok=True)
+# os.makedirs("logs", exist_ok=True)
 
 @app.get("/")
 async def root():
