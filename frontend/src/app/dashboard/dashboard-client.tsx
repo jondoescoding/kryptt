@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
-import { Home, Settings, User, MessageSquare } from "lucide-react";
+import { Home, Settings, User, MessageSquare, Search } from "lucide-react";
 import { useState } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 
@@ -15,6 +15,11 @@ const sidebarLinks = [
     label: "Chat",
     href: "/dashboard/chat",
     icon: <MessageSquare className="w-5 h-5 text-white/70" />,
+  },
+  {
+    label: "Search",
+    href: "/dashboard/search",
+    icon: <Search className="w-5 h-5 text-white/70" />,
   },
   {
     label: "Profile",
