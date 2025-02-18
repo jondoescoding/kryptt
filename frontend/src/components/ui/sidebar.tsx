@@ -145,32 +145,49 @@ export const MobileSidebar = ({
             onClick={() => setOpen(!open)}
           />
         </div>
-        <AnimatePresence>
-          {open && (
+      </div>
+      <AnimatePresence>
+        {open && (
+          <>
+            {/* Backdrop overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: 0.3,
+                ease: "easeInOut"
+              }}
+              className="fixed inset-0 bg-black md:hidden z-[90]"
+              onClick={() => setOpen(false)}
+            />
+            {/* Sidebar panel */}
             <motion.div
               initial={{ x: "-100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "-100%", opacity: 0 }}
               transition={{
                 duration: 0.3,
-                ease: "easeInOut",
+                ease: [0.32, 0.72, 0, 1]
               }}
               className={cn(
-                "fixed h-full w-full inset-0 bg-zinc-900 p-10 z-[100] flex flex-col justify-between",
+                "fixed top-0 left-0 h-full w-[280px] bg-zinc-900 p-6 shadow-xl md:hidden z-[100]",
                 className
               )}
             >
-              <div
-                className="absolute right-10 top-10 z-50 text-white/70 cursor-pointer hover:text-yellow-400 transition-colors"
-                onClick={() => setOpen(!open)}
-              >
-                <X />
+              <div className="flex justify-end mb-4">
+                <X
+                  className="text-white/70 cursor-pointer hover:text-yellow-400 transition-colors"
+                  onClick={() => setOpen(false)}
+                />
               </div>
-              {children}
+              <div className="overflow-y-auto h-[calc(100%-2rem)]">
+                {children}
+              </div>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 };

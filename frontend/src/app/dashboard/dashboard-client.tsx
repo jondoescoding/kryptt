@@ -37,7 +37,7 @@ export function DashboardClient({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <div className="flex h-screen bg-black">
+    <div className="flex flex-col md:flex-row min-h-screen bg-black">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
         <SidebarBody>
           <div className="flex flex-col h-full">
@@ -54,7 +54,7 @@ export function DashboardClient({ children }: { children: React.ReactNode }) {
           </div>
         </SidebarBody>
       </Sidebar>
-      <main className="flex-1 p-8 overflow-auto">
+      <main className="flex-1 p-4 md:p-8 overflow-auto">
         {children}
       </main>
     </div>
