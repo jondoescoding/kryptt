@@ -52,7 +52,6 @@ npm run dev
 
 - [X] JMD-denominated portfolio view
 - [ ] Recurring orders ("Buy every Monday")
-- [ ] WhatsApp trading integration
 - [ ] Trading based on monetary events (e.g. "Buy $50 ETHUSD when it hits $150")
 - [ ] Trading based on social media (e.g. "Buy $50 DOGEUSD when ELON tweets")
 - [ ] Trading based on technical analysis (e.g. "Buy $50 $BTCUSD if the RSI is below 30")
