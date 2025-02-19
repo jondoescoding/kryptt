@@ -13,9 +13,9 @@ Jamaican residents face:
 ## Key Features 🚀
 
 - **Alpaca Integration** 🔌: SEC-licensed trading with Jamaican KYC compliance
-- **Natural Language Trading** 🤖: "Buy $50 AAPL" commands via Groq's ultra-fast LLM
-- **Clerk Authentication** 🔒: Secure user management with JWT sessions
-- **Donation System** ❤️: Paddle integration for platform support
+- **Natural Language Trading** 🤖: "Buy $50 AAPL" commands
+- **Supabase Authentication** 🔒: Secure user management with JWT sessions
+- **Donation System** ❤️: Paddle integration for platform support (coming soon)
 
 # Quick Start 🛠️
 
@@ -46,13 +46,12 @@ npm run dev
 
 ## Core Tech Stack ⚙️
 
-`Alpaca API` · `Supabase` · `Groq` · `LangGraph` · `FastAPI`
+`Alpaca API` · `Supabase` · `LLM Models` · `LangGraph` · `FastAPI`
 
 ## Roadmap 🗺️
 
 - [X] JMD-denominated portfolio view
 - [ ] Recurring orders ("Buy every Monday")
-- [ ] WhatsApp trading integration
 - [ ] Trading based on monetary events (e.g. "Buy $50 ETHUSD when it hits $150")
 - [ ] Trading based on social media (e.g. "Buy $50 DOGEUSD when ELON tweets")
 - [ ] Trading based on technical analysis (e.g. "Buy $50 $BTCUSD if the RSI is below 30")
