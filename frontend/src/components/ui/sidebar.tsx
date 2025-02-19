@@ -3,13 +3,17 @@
 import { cn } from "@/lib/utils";
 import Link, { LinkProps } from "next/link";
 import React, { useState, createContext, useContext } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { AnimatePresence, motion, HTMLMotionProps } from "framer-motion";
+import { Menu, X, ChevronLeft } from "lucide-react";
+
+interface IconProps extends React.SVGProps<SVGSVGElement> {
+  className?: string;
+}
 
 interface Links {
   label: string;
   href: string;
-  icon: React.JSX.Element | React.ReactNode;
+  icon: React.ReactElement<IconProps>;
 }
 
 interface SidebarContextProps {
@@ -71,20 +75,32 @@ export const Sidebar = ({
   );
 };
 
-export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+interface SidebarBodyProps extends Omit<HTMLMotionProps<"div">, "children"> {
+  children: React.ReactNode;
+}
+
+export const SidebarBody = ({ children, className, ...props }: SidebarBodyProps) => {
   return (
     <>
-      <DesktopSidebar {...props} />
-      <MobileSidebar {...(props as React.ComponentProps<"div">)} />
+      <DesktopSidebar className={className} {...props}>
+        {children}
+      </DesktopSidebar>
+      <MobileSidebar className={className}>
+        {children}
+      </MobileSidebar>
     </>
   );
 };
+
+interface DesktopSidebarProps extends HTMLMotionProps<"div"> {
+  children: React.ReactNode;
+}
 
 export const DesktopSidebar = ({
   className,
   children,
   ...props
-}: React.ComponentProps<typeof motion.div>) => {
+}: DesktopSidebarProps) => {
   const { open, setOpen, animate } = useSidebar();
 
   // Load initial state from localStorage
@@ -221,9 +237,9 @@ export const SidebarLink = ({
         whileHover={{ scale: 1.1 }}
         transition={{ duration: 0.2 }}
       >
-        {React.cloneElement(link.icon as React.ReactElement, {
+        {React.cloneElement(link.icon, {
           className: "w-6 h-6 text-white/70"
-        })}
+        } as IconProps)}
       </motion.div>
       <motion.span
         animate={{

@@ -16,7 +16,7 @@ const faqItems = [
   },
   {
     question: "What markets can I trade?",
-    answer: "Through our Alpaca integration, you can access US stocks and ETFs. We're continuously working to expand our market offerings.",
+    answer: "Through our Alpaca integration, you can access US stocks and ETFs. We&apos;re continuously working to expand our market offerings.",
   },
 ];
 
@@ -32,7 +32,7 @@ export default function Home() {
                 Frequently Asked Questions
               </h2>
               <p className="text-lg font-normal text-white/70 leading-relaxed">
-                Got questions? We've got answers.
+                Got questions? We&apos;ve got answers.
               </p>
             </div>
             <div className="max-w-2xl mx-auto">

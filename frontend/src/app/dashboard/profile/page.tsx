@@ -13,6 +13,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import Image from "next/image"
 
 // Types
 type Profile = {
@@ -114,14 +115,24 @@ const ProfilePicture = ({
       
       // Cleanup preview URL
       URL.revokeObjectURL(objectUrl)
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message :
+        typeof error === 'object' && error !== null && 'message' in error
+          ? String(error.message)
+          : 'Error uploading avatar! Please try again.';
+
       console.error('Detailed upload error:', {
         error,
-        message: error?.message,
-        details: error?.details,
-        statusCode: error?.statusCode
-      })
-      alert(error?.message || 'Error uploading avatar! Please try again.')
+        message: errorMessage,
+        details: typeof error === 'object' && error !== null && 'details' in error
+          ? String(error.details)
+          : undefined,
+        statusCode: typeof error === 'object' && error !== null && 'statusCode' in error
+          ? Number(error.statusCode)
+          : undefined
+      });
+
+      alert(errorMessage);
       // Reset preview on error
       setPreviewUrl(avatarUrl)
     } finally {
@@ -145,10 +156,13 @@ const ProfilePicture = ({
       <div className="flex items-center gap-4">
         <div className="w-16 h-16 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden bg-black/20">
           {previewUrl ? (
-            <img
+            <Image
               src={previewUrl}
               alt="Avatar"
+              width={64}
+              height={64}
               className="w-full h-full object-cover"
+              unoptimized // Since we're using dynamic URLs from Supabase
             />
           ) : (
             <div className="text-white/50 text-xs text-center">No image</div>

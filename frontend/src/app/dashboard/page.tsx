@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import * as Plot from "@observablehq/plot";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,39 +25,31 @@ interface AccountData {
 export default function DashboardPage() {
   const { hasKeys } = useApiKeysStore();
   const [accountData, setAccountData] = useState<AccountData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const chartRef = useRef<HTMLDivElement>(null);
   const [isRetrying, setIsRetrying] = useState(false);
 
-  // Function to fetch account data
-  const fetchAccountData = async () => {
-    if (!hasKeys) return;
-    
+  const fetchAccountData = useCallback(async () => {
     try {
-      setLoading(true);
-      const response = await fetch('http://localhost:8000/api/v1/alpaca/account', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      setIsLoading(true);
+      setError(null);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/account/info`);
       
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Failed to fetch account data');
+        throw new Error('Failed to fetch account data');
       }
-      
+
       const data = await response.json();
       setAccountData(data);
-      setError(null);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to load account details');
+      console.error('Error fetching account data:', error);
+      setError('Failed to fetch account data. Please try again.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
       setIsRetrying(false);
     }
-  };
+  }, []);
 
   const handleRetry = async () => {
     setIsRetrying(true);
@@ -106,7 +98,7 @@ export default function DashboardPage() {
   // Initial data fetch
   useEffect(() => {
     fetchAccountData();
-  }, [hasKeys]);
+  }, [hasKeys, fetchAccountData]);
 
   // Animation variants
   const containerVariants = {
@@ -141,7 +133,7 @@ export default function DashboardPage() {
   if (error) {
     return (
       <div className="space-y-8">
-        <Alert variant="destructive">
+        <Alert variant="error">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
@@ -165,11 +157,11 @@ export default function DashboardPage() {
         <h2 className="text-3xl font-bold text-white">Today</h2>
         <Button 
           onClick={fetchAccountData} 
-          disabled={loading}
+          disabled={isLoading}
           variant="outline"
           size="sm"
         >
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
       </div>
@@ -188,7 +180,7 @@ export default function DashboardPage() {
               <CardTitle className="text-base font-medium">Total Equity</CardTitle>
             </CardHeader>
             <CardContent>
-              {loading ? (
+              {isLoading ? (
                 <Skeleton className="h-20 w-56 mx-auto" />
               ) : (
                 <div className="text-5xl font-bold text-center py-4">
@@ -206,7 +198,7 @@ export default function DashboardPage() {
               <CardTitle className="text-base font-medium">Cash</CardTitle>
             </CardHeader>
             <CardContent>
-              {loading ? (
+              {isLoading ? (
                 <Skeleton className="h-10 w-40" />
               ) : (
                 <div className="text-3xl font-bold">
@@ -224,7 +216,7 @@ export default function DashboardPage() {
               <CardTitle className="text-base font-medium">Buying Power</CardTitle>
             </CardHeader>
             <CardContent>
-              {loading ? (
+              {isLoading ? (
                 <Skeleton className="h-10 w-40" />
               ) : (
                 <div className="text-3xl font-bold">
@@ -242,7 +234,7 @@ export default function DashboardPage() {
               <CardTitle className="text-base font-medium">Long/Short Ratio</CardTitle>
             </CardHeader>
             <CardContent>
-              {loading ? (
+              {isLoading ? (
                 <Skeleton className="h-[200px] w-full" />
               ) : (
                 <div ref={chartRef} className="flex justify-center" />
@@ -258,7 +250,7 @@ export default function DashboardPage() {
               <CardTitle className="text-base font-medium">Daytrade Status</CardTitle>
             </CardHeader>
             <CardContent>
-              {loading ? (
+              {isLoading ? (
                 <div className="flex items-center justify-between">
                   <Skeleton className="h-10 w-40" />
                   <Skeleton className="h-10 w-40" />

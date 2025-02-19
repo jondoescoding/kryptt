@@ -18,10 +18,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useApiKeysStore } from "@/lib/store/api-keys-store";
-
-const validateGroqKey = (key: string) => {
-  return key.startsWith('gsk_');
-};
+import { User } from '@supabase/supabase-js';
 
 const validateAlpacaKey = (key: string) => {
   return /^[A-Z0-9]{20}$/.test(key);
@@ -35,7 +32,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const supabase = createClient();
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const { setKeys: setStoreKeys, clearKeys: clearStoreKeys } = useApiKeysStore();
   const [keys, setKeys] = useState({
     groq: "",
@@ -112,11 +109,12 @@ export default function SettingsPage() {
         localStorage.setItem('alpaca_secret_key', newKeys.alpacaSecretKey);
         localStorage.setItem('alpaca_endpoint', newKeys.alpacaEndpoint);
       }
-    } catch (error) {
+    } catch (err) {
       setStatus({ 
         type: "error", 
         message: "Failed to fetch stored keys" 
       });
+      console.error("Failed to fetch keys:", err);
     }
   };
 
@@ -162,7 +160,6 @@ export default function SettingsPage() {
         }),
       });
 
-      const data = await response.json();
       if (response.ok) {
         // Update Zustand store
         setStoreKeys(keys.alpacaApiKey, keys.alpacaSecretKey);
@@ -175,9 +172,11 @@ export default function SettingsPage() {
         
         toast.success("API keys saved successfully");
       } else {
-        toast.error(data.error || "Failed to save API keys");
+        const errorData = await response.json();
+        toast.error(errorData.error || "Failed to save API keys");
       }
     } catch (error) {
+      console.error("Server connection error:", error);
       toast.error("Unable to connect to the server");
     } finally {
       setIsLoading(false);
@@ -324,7 +323,7 @@ export default function SettingsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action will clear all your stored API keys. You will need to re-enter them to use the platform's features.
+              This action will clear all your stored API keys. You will need to re-enter them to use the platform&apos;s features.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

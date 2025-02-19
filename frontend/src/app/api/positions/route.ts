@@ -34,12 +34,12 @@ export async function GET() {
     const positions = await response.json();
     return NextResponse.json(positions);
 
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     console.error('Positions API Error:', error);
     return NextResponse.json(
       {
         error: 'Failed to fetch positions',
-        details: error.message
+        details: error instanceof Error ? error.message : 'Unknown error occurred'
       },
       { status: 500 }
     );

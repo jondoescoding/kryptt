@@ -34,13 +34,18 @@ export async function middleware(request: NextRequest) {
           })
         },
         remove(name: string, options: CookieOptions) {
-          request.cookies.delete(name)
+          console.log('Removing cookie:', name, options);
+          // Next.js expects an array of cookie names to delete
+          request.cookies.delete(name);
           response = NextResponse.next({
             request: {
               headers: request.headers,
             },
           })
-          response.cookies.delete(name)
+          response.cookies.delete({
+            name,
+            ...options
+          })
         },
       },
     }

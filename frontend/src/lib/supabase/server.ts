@@ -1,22 +1,45 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { CookieOptions } from '@supabase/ssr'
+import { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies'
 
 export const createClient = () => {
-  const cookieStore = cookies()
-
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
+        async get(name: string) {
+          try {
+            const cookieStore = await cookies()
+            const cookie = cookieStore.get(name)
+            return cookie?.value
+          } catch {
+            return undefined
+          }
         },
-        set(name: string, value: string, options: any) {
-          cookieStore.set({ name, value, ...options })
+        async set(name: string, value: string, options: CookieOptions) {
+          try {
+            const cookieStore = await cookies()
+            cookieStore.set({
+              name,
+              value,
+              ...options
+            })
+          } catch {
+            // Handle cookie setting error silently
+          }
         },
-        remove(name: string, options: any) {
-          cookieStore.set({ name, value: '', ...options })
+        async remove(name: string, options: CookieOptions) {
+          try {
+            const cookieStore = await cookies()
+            cookieStore.delete({
+              name,
+              ...options
+            } as ResponseCookie)
+          } catch {
+            // Handle cookie removal error silently
+          }
         },
       },
     }
