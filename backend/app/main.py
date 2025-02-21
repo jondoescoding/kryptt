@@ -69,3 +69,17 @@ async def startup_event():
             logging.info_with_emoji("🚀 Trading client initialized successfully")
         except Exception as e:
             logging.error_with_emoji(f"❌ Failed to initialize trading client: {str(e)}")
+
+if __name__ == "__main__":
+    # Get port from environment variable or use default
+    port = int(os.getenv("PORT", 10000))
+    
+    # Import and run uvicorn server
+    import uvicorn
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=port,
+        reload=False,
+        workers=1
+    )
