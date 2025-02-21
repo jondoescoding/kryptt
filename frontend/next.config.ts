@@ -18,16 +18,14 @@ const nextConfig = {
   distDir: '.next',
   reactStrictMode: true,
   swcMinify: true,
-  // Handle 404s properly
+  // Configure API routes
   async rewrites() {
-    return {
-      fallback: [
-        {
-          source: '/:path*',
-          destination: '/_not-found'
-        }
-      ]
-    }
+    return [
+      {
+        source: '/api/:path*',
+        destination: process.env.NEXT_PUBLIC_API_URL + '/api/:path*'
+      }
+    ]
   },
   // Ensure static files are copied to the standalone build
   experimental: {
