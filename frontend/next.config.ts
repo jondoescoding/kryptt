@@ -17,7 +17,6 @@ const nextConfig = {
   // Add production specific settings
   distDir: '.next',
   reactStrictMode: true,
-  swcMinify: true,
   // Configure API routes
   async rewrites() {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
@@ -28,16 +27,18 @@ const nextConfig = {
       }
     ]
   },
-  // Ensure static files are copied to the standalone build
-  experimental: {
-    outputFileTracingRoot: process.env.NODE_ENV === "production" ? "./" : undefined,
-    outputFileTracingExcludes: {
-      '*': [
-        'node_modules/@swc/core-linux-x64-gnu',
-        'node_modules/@swc/core-linux-x64-musl',
-        'node_modules/@esbuild/linux-x64',
-      ],
-    },
+  // File tracing configuration
+  outputFileTracingRoot: process.env.NODE_ENV === "production" 
+    ? process.platform === "win32" 
+      ? process.cwd()
+      : "/opt/render/project/src/frontend" 
+    : undefined,
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/core-linux-x64-gnu',
+      'node_modules/@swc/core-linux-x64-musl',
+      'node_modules/@esbuild/linux-x64',
+    ],
   }
 };
 
