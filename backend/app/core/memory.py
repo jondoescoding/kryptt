@@ -6,8 +6,8 @@ Social Media:
 Date: January 2024
 """
 
-from typing import Dict, List, Optional
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
+from typing import Dict, List
+from langchain_core.messages import BaseMessage
 from pydantic import BaseModel
 from app.core.logging import logging
 
