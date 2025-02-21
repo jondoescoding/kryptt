@@ -7,7 +7,14 @@ const nextConfig: NextConfig = {
       { module: /node_modules\/punycode/ }
     ];
     return config;
-  }
+  },
+  output: 'standalone',
+  // Enable static compression
+  compress: true,
+  // Add trailing slash handling
+  trailingSlash: false,
+  // Disable powered by header
+  poweredByHeader: false
 };
 
 export default nextConfig;
